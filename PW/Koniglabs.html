@@ -1,0 +1,109 @@
+{% extends 'base.html' %}
+
+{% block title %}KonigLabs - Dark Themed Blog{% endblock %}
+
+{% block content %}
+<section id="koniglabs">
+    <h2 style="font-size: 2.5em; text-align: center; margin-bottom: 20px;">KonigLabs</h2>
+
+    <div class="project">
+        <h3>Word hybridization algorithm app (Dutch - German)</h3>
+        <p>
+            This program with unique algorithm calculates the similarity between a Dutch word and a German word.
+            It determines their initial binary similarity and generates hybrid words by blending characters based on their calculated similarity scores.
+            Up to 50 hybrid words are generated and evaluated for their resemblance to both original words using SequenceMatcher.
+            Words with a similarity score below 0.5 are excluded, and the top results are sorted and displayed.
+        </p>
+        <ul>
+            <li>Binary Similarity: [Similarity indexes]</li>
+            <li>Initial Similarity: [Initial similarity percentage]</li>
+            <li>Generated Hybrid Words: [List of generated hybrid words], [List of sorted similarity scores]</li>
+        </ul>
+    </div>
+    <p>Example below for word: German - Geschichte | Dutch - Geschiedenis | English - History </p>
+    <div class="codebox">
+        <pre>
+            [2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 0, 0, 0, 0, 0, 0]
+            66 %
+            Word: Geschichee, German Similarity: 0.9, Dutch Similarity: 0.6060606060606061
+            Word: Geschiedte, German Similarity: 0.8, Dutch Similarity: 0.6818181818181819
+            Word: Geschieden, German Similarity: 0.7, Dutch Similarity: 0.7575757575757576
+            Word: Geschichtn, German Similarity: 0.9, Dutch Similarity: 0.5303030303030303
+            Word: Geschiehtn, German Similarity: 0.8, Dutch Similarity: 0.6060606060606061
+            Word: Geschicdee, German Similarity: 0.8, Dutch Similarity: 0.6060606060606061
+            Word: Geschiedtn, German Similarity: 0.7, Dutch Similarity: 0.6818181818181819
+            Word: Geschihte, German Similarity: 0.8526315789473684, Dutch Similarity: 0.5
+            Word: Geschicte, German Similarity: 0.8526315789473684, Dutch Similarity: 0.5
+            Word: Geschiche, German Similarity: 0.8526315789473684, Dutch Similarity: 0.5
+            Word: Geschihee, German Similarity: 0.7578947368421053, Dutch Similarity: 0.5714285714285714
+            Word: Geschicee, German Similarity: 0.7578947368421053, Dutch Similarity: 0.5714285714285714
+            Word: Geschiete, German Similarity: 0.7578947368421053, Dutch Similarity: 0.5714285714285714
+            Word: Geschicde, German Similarity: 0.7578947368421053, Dutch Similarity: 0.5714285714285714
+            Word: Geschiehe, German Similarity: 0.7578947368421053, Dutch Similarity: 0.5714285714285714
+            Word: Geschieen, German Similarity: 0.6631578947368421, Dutch Similarity: 0.6428571428571428
+            Word: Geschiedn, German Similarity: 0.6631578947368421, Dutch Similarity: 0.6428571428571428
+            Word: Geschiden, German Similarity: 0.6631578947368421, Dutch Similarity: 0.6428571428571428
+            Word: Geschieht, German Similarity: 0.7578947368421053, Dutch Similarity: 0.5
+            Word: Geschicdt, German Similarity: 0.7578947368421053, Dutch Similarity: 0.5
+            Word: Geschihtn, German Similarity: 0.7578947368421053, Dutch Similarity: 0.5
+            Word: Geschidte, German Similarity: 0.7578947368421053, Dutch Similarity: 0.5
+            Word: Geschieee, German Similarity: 0.6631578947368421, Dutch Similarity: 0.5714285714285714
+            Word: Geschidee, German Similarity: 0.6631578947368421, Dutch Similarity: 0.5714285714285714
+            Word: Geschidtn, German Similarity: 0.6631578947368421, Dutch Similarity: 0.5714285714285714
+            Word: Geschiedt, German Similarity: 0.6631578947368421, Dutch Similarity: 0.5714285714285714
+            Word: Geschiee, German Similarity: 0.6222222222222222, Dutch Similarity: 0.5333333333333334
+            Word: Geschied, German Similarity: 0.6222222222222222, Dutch Similarity: 0.5333333333333334
+            Word: Geschide, German Similarity: 0.6222222222222222, Dutch Similarity: 0.5333333333333334
+            Word: Geschien, German Similarity: 0.6222222222222222, Dutch Similarity: 0.5333333333333334
+
+        </pre>
+    </div>
+    <!-- Add more projects as needed -->
+
+</section>
+
+<style>
+    body {
+        background-color: #000000;
+        color: #ffffff;
+        font-family: 'Montserrat', sans-serif; /* Ensure all fonts use Montserrat */
+        margin: 0;
+        padding: 0;
+        overflow-x: hidden;
+    }
+
+    #koniglabs {
+        padding: 20px;
+    }
+
+    .project {
+        margin-bottom: 40px;
+    }
+
+    .project h3 {
+        font-size: 2em;
+    }
+
+    .project p {
+        font-size: 1.2em;
+    }
+
+    .codebox {
+        margin-top: 30px;
+        background-color: #000000;
+        padding: 20px;
+        border-radius: 5px;
+    }
+
+    .codebox h3 {
+        font-size: 1.8em;
+        margin-bottom: 10px;
+    }
+
+    .codebox pre {
+        font-size: 1.2em;
+        white-space: pre-wrap; /* Ensure text wraps */
+    }
+</style>
+
+{% endblock %}

@@ -1,0 +1,722 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Survey - War in Ukraine</title>
+    <style>
+        /* Importing Montserrat font */
+        @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&display=swap');
+
+        /* General reset and base styles */
+        body, html {
+            margin: 0;
+            padding: 0;
+            height: 100%;
+            font-family: 'Montserrat', sans-serif;
+            overflow-x: hidden; /* Adjusted to prevent horizontal scrolling */
+        }
+
+        /* Background styling */
+        .background {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: url('https://miro.medium.com/v2/resize:fit:1280/1*TCG6JxJbD0RzqIu0nVX_aQ.gif') no-repeat center center/cover;
+            z-index: -2;
+            transition: filter 0.3s;
+        }
+
+        /* Apply blur effect on background */
+        .blurred {
+            filter: blur(10px);
+        }
+
+        /* Overlay container */
+        .overlay {
+            position: relative;
+            z-index: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100%;
+            color: #ffffff;
+        }
+
+        /* Header styling */
+        .header {
+            font-size: 2em;
+            margin: 20px 0;
+            background-color: rgba(105, 48, 48, 0.0);
+            padding: 10px 20px;
+            border-radius: 10px;
+            text-align: center;
+            transition: opacity 1s ease-in-out;
+        }
+
+        /* Toggle button styling */
+        .toggle-blur {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background-color: rgba(0, 0, 0, 0.9);
+            color: #ffffff;
+            border: none;
+            border-radius: 5px;
+            padding: 10px 20px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+            z-index: 3;
+        }
+
+        .toggle-blur:hover {
+            background-color: rgba(0, 0, 0, 1);
+        }
+
+        /* Survey container */
+        .survey-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            width: 100%;
+            flex: 1; /* Allow survey container to take full height */
+            transition: opacity 1s ease-in-out;
+            opacity: 0;
+        }
+
+        /* Question box styling */
+        .question-box {
+            background-color: #000000;
+            color: #ffffff;
+            border-radius: 10px;
+            padding: 20px;
+            text-align: center;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            opacity: 0;
+            transition: opacity 0.5s ease-in-out;
+            width: 80%;
+            margin-bottom: 20px;
+        }
+
+        .question-box.visible {
+            opacity: 1;
+        }
+
+        /* Button container styling */
+        .button-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            width: 80%;
+        }
+
+        /* Survey button styling */
+        .survey-button {
+            background-color: #000000;
+            color: #ffffff;
+            border: none;
+            border-radius: 5px;
+            padding: 10px 20px;
+            cursor: pointer;
+            font-size: 1em;
+            transition: background-color 0.3s, transform 0.3s;
+            width: 100%;
+            margin-bottom: 10px;
+        }
+
+        .survey-button:hover {
+            background-color: rgba(0, 0, 0, 0.65);
+            transform: translateY(-5px);
+        }
+
+        /* Introduction overlay and buttons */
+        .intro-overlay, .name-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            background-color: rgba(0, 0, 0, 0.9);
+            opacity: 1;
+            transition: opacity 1s ease-in-out;
+            z-index: 2;
+        }
+
+        .intro-overlay.hidden, .name-overlay.hidden {
+            opacity: 0;
+            pointer-events: none; /* Prevent interaction when hidden */
+        }
+
+        .intro, .name {
+            color: #ffffff;
+            font-size: 1.5em;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .intro-buttons, .name-buttons {
+            display: flex;
+            justify-content: center; /* Center the buttons horizontally */
+            width: 100%; /* Full width for the buttons */
+        }
+
+        .intro-buttons button, .name-buttons button {
+            background-color: #000000;
+            color: #ffffff;
+            border: none;
+            border-radius: 5px;
+            padding: 10px 20px;
+            cursor: pointer;
+            font-size: 1em;
+            transition: background-color 0.3s, transform 0.3s;
+            margin: 0 10px; /* Add space between buttons */
+        }
+
+        .intro-buttons button:hover, .name-buttons button:hover {
+            background-color: rgba(0, 0, 0, 0.65);
+            transform: translateY(-5px);
+        }
+
+        .name-input {
+            padding: 10px;
+            border-radius: 5px;
+            border: none;
+            margin-bottom: 10px;
+            font-size: 1em;
+        }
+
+        /* Thank You overlay */
+        .thank-you-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            background-color: rgba(0, 0, 0, 1);
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 1s ease-in-out;
+            z-index: 3;
+        }
+
+        .thank-you {
+            color: #ffffff;
+            font-size: 2em;
+            text-align: center;
+            padding: 20px;
+            background-color: rgba(0, 0, 0, 1);
+            border-radius: 10px;
+        }
+
+        .thank-you-overlay.visible {
+            opacity: 1;
+            pointer-events: auto;
+        }
+        .thank-you-gif {
+            max-width: 100%;
+            max-height: 100%;
+            margin-top: 10px; /* Adjust as needed */
+        }
+        /* Language Selector */
+        .language-selector {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            z-index: 4;
+        }
+
+        .language-selector select {
+            background-color: rgba(0, 0, 0, 1);
+            color: #ffffff;
+            border: none;
+            border-radius: 5px;
+            padding: 10px 20px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+            appearance: none; /* Remove default styles on some browsers */
+            -webkit-appearance: none;
+            -moz-appearance: none;
+        }
+
+        .language-selector button:hover {
+            background-color: rgba(0, 0, 0, 0.65);
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Language Selector -->
+    <div class="language-selector">
+        <select id="language-select" onchange="changeLanguage(this.value)">
+            <option value="en">EN</option>
+            <option value="ru">RU</option>
+            <option value="ua">UA</option>
+            <option value="pl">PL</option>
+        </select>
+    </div>
+
+
+    <!-- Background -->
+    <div class="background" id="background"></div>
+
+    <!-- Overlay content -->
+    <div class="overlay">
+        <!-- Toggle blur button -->
+        <button class="toggle-blur" onclick="toggleBlur()" data-lang-en="Hide Background" data-lang-ru="Скрыть фон" data-lang-pl="Ukryj tło" data-lang-ua="Сховати фон">Hide Background</button>
+
+        <!-- Introduction overlay -->
+        <div class="intro-overlay" id="intro-overlay">
+            <div class="intro">
+                <p data-lang-en="This is a survey regarding the War in Ukraine and its effects on people."
+                   data-lang-ru="Это опрос о войне в Украине и ее последствиях для людей."
+                   data-lang-pl="To jest ankieta dotycząca wojny na Ukrainie i jej wpływu na ludzi."
+                   data-lang-ua="Це опитування щодо війни в Україні та її впливу на людей.">This is a survey regarding the War in Ukraine and its effects on people.</p>
+                <p data-lang-en="It may take up to 2 minutes to complete the survey."
+                   data-lang-ru="Заполнение опроса может занять до 2 минут."
+                   data-lang-pl="Wypełnienie ankiety może zająć do 2 minut."
+                   data-lang-ua="На заповнення опитування може піти до 2 хвилин.">It may take up to 2 minutes to complete the survey.</p>
+            </div>
+            <div class="intro-buttons">
+                <button onclick="revertSurvey()" data-lang-en="Revert" data-lang-ru="Вернуться" data-lang-pl="Powrót" data-lang-ua="Повернутися">Revert</button>
+                <button onclick="showNameOverlay()" data-lang-en="Proceed" data-lang-ru="Продолжить" data-lang-pl="Kontynuuj" data-lang-ua="Продовжити">Proceed</button>
+            </div>
+        </div>
+
+        <!-- Name overlay -->
+        <div class="name-overlay hidden" id="name-overlay">
+            <div class="name">
+                <p data-lang-en="Please enter your name:" data-lang-ru="Пожалуйста, введите ваше имя:" data-lang-pl="Wprowadź swoje imię i nazwisko" data-lang-ua="Будь ласка, введіть ваше ім'я:">Please enter your name:</p>
+                <input type="text" class="name-input" id="user-name" placeholder=" " data-lang-en="Your name" data-lang-pl="Imię i nazwisko" data-lang-ru="Ваше имя" data-lang-ua="Ваше ім'я">
+            </div>
+            <div class="name-buttons">
+                <button onclick="startSurvey()" data-lang-en="Start Survey" data-lang-ru="Начать опрос" data-lang-pl="Rozpocznij ankietę" data-lang-ua="Почати опитування">Start Survey</button>
+            </div>
+        </div>
+
+        <!-- Header -->
+        <div class="header" id="header" data-lang-en=""
+             data-lang-ru=""
+             data-lang-ua=""></div>
+
+        <!-- Survey container -->
+        <div class="survey-container" id="survey-container">
+            <!-- Question box -->
+            <div class="question-box" id="question-box">
+                <p class="question-text" id="question-text"></p>
+            </div>
+
+            <!-- Button container -->
+            <div class="button-container" id="button-container">
+                <!-- Buttons will be generated dynamically -->
+            </div>
+        </div>
+
+        <!-- Thank You overlay -->
+        <div class="thank-you-overlay hidden" id="thank-you-overlay">
+            <div class="thank-you">
+        <p id="thank-you-message"></p>
+        <!-- Add the img tag for the GIF -->
+        <img src="https://media3.giphy.com/media/Y4u06P3EQ8pKdLpohs/200w.gif?cid=82a1493bksdusxfgm3orkeh05325hr6455dtb7mugw42jrbm&ep=v1_gifs_related&rid=200w.gif&ct=g" alt="" class="thank-you-gif">
+            </div>
+        </div>
+
+    <!-- JavaScript -->
+    <script>
+        // Sample questions and answers
+        const questions = {
+            en: [
+        "Question 1: How has your family been impacted by the ongoing war in Ukraine?",
+        "Question 2: Have you experienced the loss of family members, relatives, or friends due to the conflict?",
+        "Question 3: What are your perspectives on the impact of the war on ordinary Russian civilians and Russian soldiers?",
+        "Question 4: Has your local town received adequate supplies and assistance during these challenging times?",
+        "Question 5: In your opinion, what are the prospects for achieving peace between Ukraine and Russia?",
+        "Question 6: When did you depart from Ukraine, and what were the circumstances surrounding your departure?",
+        "Question 7: Finally, do you have plans to return to Ukraine in the future?"
+    ],
+    ru: [
+        "Вопрос 1: Как ваша семья пострадала от текущей войны в Украине?",
+        "Вопрос 2: Потеряли ли вы членов семьи, родственников или друзей из-за конфликта?",
+        "Вопрос 3: Каковы ваши взгляды на влияние войны на обычных российских граждан и российских солдат?",
+        "Вопрос 4: Получило ли ваше местное сообщество достаточное количество поставок и помощи в эти непростые времена?",
+        "Вопрос 5: Каковы, по вашему мнению, перспективы достижения мира между Украиной и Россией?",
+        "Вопрос 6: Когда вы уехали из Украины, и каковы были обстоятельства вашего отъезда?",
+        "Вопрос 7: И, наконец, есть ли у вас планы вернуться в Украину в будущем?"
+    ],
+    ua: [
+        "Питання 1: Як ваша сім'я постраждала від поточної війни в Україні?",
+        "Питання 2: Чи втратили ви членів сім'ї, родичів або друзів через конфлікт?",
+        "Питання 3: Які ваші перспективи на вплив війни на звичайних російських громадян і російських солдат?",
+        "Питання 4: Чи отримало ваше місцеве співтовариство достатню кількість постачань і допомоги у ці непрості часи?",
+        "Питання 5: Які, на вашу думку, перспективи досягнення миру між Україною і Росією?",
+        "Питання 6: Коли ви виїхали з України, і які були обставини вашого від'їзду?",
+        "Питання 7: І нарешті, чи маєте ви плани повернутися до України у майбутньому?"
+    ],
+    pl: [
+        "Pytanie 1: Jak twoja rodzina została dotknięta trwającą wojną na Ukrainie?",
+        "Pytanie 2: Czy doświadczyłeś utraty członków rodziny, krewnych lub przyjaciół z powodu konfliktu?",
+        "Pytanie 3: Jak oceniasz wpływ wojny na zwykłych rosyjskich cywilów i rosyjskich żołnierzy?",
+        "Pytanie 4: Czy twoje lokalne miasto otrzymało odpowiednią ilość zaopatrzenia i pomocy w tych trudnych czasach?",
+        "Pytanie 5: Jakie są twoje zdaniem perspektywy na osiągnięcie pokoju między Ukrainą a Rosją?",
+        "Pytanie 6: Kiedy opuściłeś Ukrainę i jakie były okoliczności twojego wyjazdu?",
+        "Pytanie 7: Wreszcie, czy masz plany powrotu do Ukrainy w przyszłości?"
+    ]
+        };
+
+        const answers = {
+            en: [
+        [
+            "Our family has been negatively impacted by the war.",
+            "We have managed to remain neutral amidst the conflict.",
+            "The war has brought some positive changes to our family dynamics.",
+            "The war has caused significant emotional distress within our family.",
+            "We have experienced both positive and negative impacts due to the war."
+        ],
+        [
+            "The war has disrupted our daily life significantly.",
+            "We have seen increased solidarity within our community.",
+            "The economic strain has been a major consequence.",
+            "The war has led to displacement and separation from loved ones.",
+            "We have adapted to new routines and challenges brought by the conflict."
+        ],
+        [
+            "The international response has been ineffective.",
+            "The responses from other countries have been appropriate.",
+            "There has been insufficient international support.",
+            "We appreciate the efforts of international organizations in providing aid.",
+            "The political responses have complicated the situation further."
+        ],
+        [
+            "Our local town has received adequate supplies and assistance.",
+            "The support has been somewhat sufficient but could be improved.",
+            "There has been a lack of necessary supplies and assistance.",
+            "The local community has rallied together to provide mutual aid.",
+            "We have relied on local NGOs and volunteers for essential support."
+        ],
+        [
+            "I am hopeful for a peaceful resolution between Ukraine and Russia.",
+            "I think the prospects for achieving peace are uncertain.",
+            "Recovery and rebuilding efforts seem more likely than achieving peace.",
+            "The ongoing conflict has deeply affected my optimism for peace.",
+            "Dialogue and negotiation are essential for achieving lasting peace."
+        ],
+        [
+            "I departed from Ukraine recently due to safety concerns.",
+            "I left Ukraine a while ago due to personal reasons.",
+            "I left Ukraine when the conflict escalated in my region.",
+            "Leaving Ukraine was a difficult decision due to strong ties to my homeland.",
+            "My departure from Ukraine was sudden and unexpected."
+        ],
+        [
+            "Yes, I plan to return to Ukraine as soon as the situation stabilizes.",
+            "I am unsure about returning to Ukraine in the foreseeable future.",
+            "No, I do not have plans to return to Ukraine.",
+            "My return to Ukraine depends on the political and security situation.",
+            "I hope to return to Ukraine to contribute to rebuilding efforts."
+        ]
+    ],
+    ru: [
+        [
+            "Наша семья пострадала от войны.",
+            "Мы смогли остаться нейтральными во время конфликта.",
+            "Война принесла положительные изменения в динамике нашей семьи.",
+            "Война вызвала значительное эмоциональное страдание в нашей семье.",
+            "Мы испытали как положительные, так и отрицательные последствия войны."
+        ],
+        [
+            "Война значительно нарушила нашу повседневную жизнь.",
+            "Мы увидели увеличение солидарности в нашем сообществе.",
+            "Экономические трудности стали основным последствием.",
+            "Война привела к перемещению и разлуке с близкими.",
+            "Мы адаптировались к новым рутинам и вызовам, вызванным конфликтом."
+        ],
+        [
+            "Международные реакции оказались неэффективными.",
+            "Ответы других стран были адекватными.",
+            "Отсутствовала достаточная международная поддержка.",
+            "Мы ценим усилия международных организаций в предоставлении помощи.",
+            "Политические реакции только усложнили ситуацию."
+        ],
+        [
+            "Наш город получил достаточное количество поставок и помощи.",
+            "Поддержка была в некоторой степени достаточной, но ее можно улучшить.",
+            "Был недостаток необходимых поставок и помощи.",
+            "Местное сообщество объединилось для оказания взаимопомощи.",
+            "Мы полагались на местные НПО и добровольцев для необходимой поддержки."
+        ],
+        [
+            "Я надеюсь на мирное разрешение между Украиной и Россией.",
+            "Я думаю, что перспективы достижения мира неопределенны.",
+            "Больше верю в восстановление и перестройку, чем в достижение мира.",
+            "Текущий конфликт глубоко повлиял на мое оптимизм по поводу мира.",
+            "Для достижения долговременного мира необходимы диалог и переговоры."
+        ],
+        [
+            "Я недавно уехал из Украины из-за проблем безопасности.",
+            "Я уехал из Украины некоторое время назад по личным причинам.",
+            "Я уехал из Украины, когда конфликт обострился в моем регионе.",
+            "Уезжать из Украины было трудным решением из-за глубоких связей с родиной.",
+            "Мой отъезд из Украины был внезапным и неожиданным."
+        ],
+        [
+            "Да, я планирую вернуться в Украину, как только ситуация стабилизируется.",
+            "Я не уверен в возвращении в Украину в обозримом будущем.",
+            "Нет, у меня нет планов вернуться в Украину.",
+            "Мое возвращение в Украину зависит от политической и безопасностной ситуации.",
+            "Я надеюсь вернуться в Украину, чтобы внести свой вклад в восстановление."
+        ]
+    ],
+    ua: [
+        [
+            "Наша сім'я постраждала від війни.",
+            "Ми змогли залишитися нейтральними під час конфлікту.",
+            "Війна принесла позитивні зміни в динаміці нашої сім'ї.",
+            "Війна викликала значне емоційне страждання в нашій сім'ї.",
+            "Ми відчули як позитивні, так і негативні наслідки від війни."
+        ],
+        [
+            "Війна значно порушила наше повсякденне життя.",
+            "Ми побачили збільшення солідарності в нашому співтоваристві.",
+            "Економічні труднощі стали головним наслідком.",
+            "Війна призвела до переміщення і розлуки з близькими.",
+            "Ми адаптувались до нових рутин і викликів, які приніс конфлікт."
+        ],
+        [
+            "Міжнародні реакції виявилися неефективними.",
+            "Відповіді інших країн були адекватними.",
+            "Відсутня достатня міжнародна підтримка.",
+            "Ми цінуємо зусилля міжнародних організацій у наданні допомоги.",
+            "Політичні реакції тільки ускладнили ситуацію."
+        ],
+        [
+            "Наше місто отримало достатню кількість поставок і допомоги.",
+            "Підтримка була в певній мірі достатньою, але може бути покращена.",
+            "Був недостаток необхідних поставок і допомоги.",
+            "Місцеве співтовариство об'єдналося для надання взаємодопомоги.",
+            "Ми поклалися на місцеві НГО і добровольців для необхідної підтримки."
+        ],
+        [
+            "Я сподіваюсь на мирне вирішення між Україною і Росією.",
+            "Я думаю, що перспективи досягнення миру невизначені.",
+            "Більше вірю в відновлення і будівництво, ніж в досягнення миру.",
+            "Поточний конфлікт глибоко позначився на моє оптимізм щодо миру.",
+            "Для досягнення довгострокового миру необхідні діалог і переговори."
+        ],
+        [
+            "Я недавно виїхав з України через проблеми безпеки.",
+            "Я виїхав з України кілька часу тому з особистих причин.",
+            "Я виїхав з України, коли конфлікт загострився у моєму регіоні.",
+            "Виїзд з України був складним рішенням через глибокі зв'язки з рідиною.",
+            "Мій виїзд з України був раптовим і неочікуваним."
+        ],
+        [
+            "Так, я планую повернутися в Україну, як тільки ситуація стабілізується.",
+            "Я не впевнений у поверненні до України в найближчому майбутньому.",
+            "Ні, у мене немає планів повернутися до України.",
+            "Моє повернення до України залежить від політичної та безпекової ситуації.",
+            "Я сподіваюсь повернутися в Україну, щоб допомогти у відновленні."
+        ]
+    ],
+    pl: [
+        [
+            "Nasza rodzina ucierpiała w wyniku wojny.",
+            "Zdołaliśmy pozostać neutralni w trakcie konfliktu.",
+            "Wojna przyniosła pozytywne zmiany w dynamice naszej rodziny.",
+            "Wojna spowodowała znaczny dystrybucję emocjonalną w naszej rodzinie.",
+            "Doświadczyliśmy zarówno pozytywnych, jak i negatywnych skutków wojny."
+        ],
+        [
+            "Wojna znacznie zakłóciła nasze codzienne życie.",
+            "Zauważyliśmy wzmożoną solidarność w naszej społeczności.",
+            "Obciążenia ekonomiczne były głównym skutkiem.",
+            "Wojna doprowadziła do przemieszczenia i separacji od bliskich.",
+            "Adaptowaliśmy się do nowych rutyn i wyzwań spowodowanych konfliktem."
+        ],
+        [
+            "Międzynarodowa reakcja okazała się nieskuteczna.",
+            "Odpowiedzi innych krajów były adekwatne.",
+            "Brakowało wystarczającego wsparcia międzynarodowego.",
+            "Doceniamy wysiłki organizacji międzynarodowych w udzielaniu pomocy.",
+            "Polityczne odpowiedzi tylko komplikowały sytuację."
+        ],
+        [
+            "Nasz lokalny region otrzymał wystarczającą liczbę dostaw i wsparcie.",
+            "Wsparcie było w pewnym stopniu wystarczające, ale można je poprawić.",
+            "Brakowało niezbędnych dostaw i wsparcia.",
+            "Lokalna społeczność zjednoczyła się, aby zapewnić wzajemną pomoc.",
+            "Polegaliśmy na lokalnych NGO i wolontariuszach w zapewnieniu wsparcia."
+        ],
+        [
+            "Jestem pełen nadziei na pokojowe rozwiązanie między Ukrainą a Rosją.",
+            "Uważam, że perspektywy osiągnięcia pokoju są niepewne.",
+            "Więcej wierzę w odbudowę i odbudowę niż w osiągnięcie pokoju.",
+            "Trwający konflikt głęboko wpłynął na moją nadzieję na pokój.",
+            "Do osiągnięcia trwałego pokoju niezbędny jest dialog i negocjacje."
+        ],
+        [
+            "Ostatnio wyjechałem z Ukrainy z powodu problemów bezpieczeństwa.",
+            "Opuściłem Ukrainę jakiś czas temu z osobistych powodów.",
+            "Opuściłem Ukrainę, gdy konflikt się nasilił w moim regionie.",
+            "Opuścić Ukrainę było trudnym wyborem ze względu na silne więzi z ojczyzną.",
+            "Mój wyjazd z Ukrainy był nagły i nieoczekiwany."
+        ],
+        [
+            "Tak, planuję wrócić do Ukrainy, jak tylko sytuacja się ustabilizuje.",
+            "Nie jestem pewien/a, czy wrócę do Ukrainy w najbliższej przyszłości.",
+            "Nie, nie mam planów powrotu do Ukrainy.",
+            "Mój powrót do Ukrainy zależy od sytuacji politycznej i bezpieczeństwa.",
+            "Mam nadzieję wrócić do Ukrainy, aby pomóc w procesie odbudowy."
+        ]
+    ]
+        };
+
+        let userName = "";
+        let currentQuestionIndex = 0;
+        let currentLanguage = 'en';
+
+        // Function to load question and answers
+        function loadQuestion(index) {
+            const questionBox = document.getElementById('question-box');
+            const questionText = document.getElementById('question-text');
+            const buttonContainer = document.getElementById('button-container');
+
+            if (index < questions[currentLanguage].length) {
+                // Show question box
+                questionBox.style.display = 'block';
+
+                // Hide question box with fade-out effect
+                questionBox.classList.remove('visible');
+                setTimeout(() => {
+                    // Set new question and answers
+                    questionText.textContent = questions[currentLanguage][index];
+                    buttonContainer.innerHTML = '';
+
+                    // Create answer buttons
+                    answers[currentLanguage][index].forEach(answer => {
+                        const button = document.createElement('button');
+                        button.classList.add('survey-button');
+                        button.textContent = answer;
+                        button.onclick = () => submitResponse(answer);
+                        buttonContainer.appendChild(button);
+                    });
+
+                    // Show question box with fade-in effect
+                    questionBox.classList.add('visible');
+                }, 500); // Adjust timing to match CSS transition
+            } else {
+                // Hide question box
+                questionBox.style.display = 'none';
+                // Hide the button container
+                buttonContainer.style.display = 'none';
+                // Show thank you overlay
+                showThankYouOverlay();
+            }
+            currentQuestionIndex = index; // Update current question index
+        }
+
+        // Function to submit response
+        function submitResponse(response) {
+            fetch('/submit_response', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ question_index: currentQuestionIndex, response: response }),
+            })
+            .then(response => response.json())
+            .then(data => {
+                console.log('Success:', data);
+                currentQuestionIndex++;
+                loadQuestion(currentQuestionIndex);
+            })
+            .catch((error) => {
+                console.error('Error:', error);
+            });
+        }
+
+        // Function to start the survey
+        function startSurvey() {
+            const nameInput = document.getElementById('user-name');
+            userName = nameInput.value.trim();
+            if (userName !== "") {
+                document.getElementById('name-overlay').classList.add('hidden');
+                document.getElementById('header').style.opacity = '1';
+                loadQuestion(currentQuestionIndex);
+                document.getElementById('survey-container').style.opacity = '1';
+            } else {
+                alert(currentLanguage === 'en'
+                    ? "Please enter your name."
+                    : currentLanguage === 'ru'
+                        ? "Пожалуйста, введите ваше имя."
+                        : currentLanguage === 'pl'
+                            ? "Proszę wprowadź swoje imię."
+                            : "Будь ласка, введіть ваше ім'я.");
+            }}
+
+        // Function to show name overlay
+        function showNameOverlay() {
+            document.getElementById('intro-overlay').classList.add('hidden');
+            document.getElementById('name-overlay').classList.remove('hidden');
+        }
+
+        // Function to revert survey
+        function revertSurvey() {
+            // Simulate going back to the previous page
+            window.history.back();
+        }
+
+        // Function to toggle background blur
+        function toggleBlur() {
+            const background = document.getElementById('background');
+            if (background.classList.contains('blurred')) {
+                background.classList.remove('blurred');
+            } else {
+                background.classList.add('blurred');
+            }
+        }
+
+        // Function to show thank you overlay
+        function showThankYouOverlay() {
+            const thankYouOverlay = document.getElementById('thank-you-overlay');
+            const thankYouMessage = document.getElementById('thank-you-message');
+
+            thankYouMessage.textContent = currentLanguage === 'en'
+                ? `Thank you for completing the survey, dear ${userName}!`
+                : currentLanguage === 'ru'
+                    ? `Спасибо за участие в опросе, дорогой ${userName}!`
+                    : currentLanguage === 'pl'
+                        ? `Dziękujemy za wypełnienie ankiety, drogi ${userName}!`
+                        : `Дякуємо за участь у опитуванні, дорогий ${userName}!`;
+
+            thankYouOverlay.classList.add('visible');
+
+            setTimeout(() => {
+                const thankYouGif = document.querySelector('.thank-you-gif');
+                thankYouGif.src = 'https://media3.giphy.com/media/Y4u06P3EQ8pKdLpohs/200w.gif?cid=82a1493bksdusxfgm3orkeh05325hr6455dtb7mugw42jrbm&ep=v1_gifs_related&rid=200w.gif&ct=g'; // Set the source again to ensure it's loaded
+            }, 1000); // Adjust the delay time in milliseconds (1000ms = 1 second)
+        }
+
+
+        // Function to change language
+        function changeLanguage(language) {
+            currentLanguage = language;
+            document.querySelectorAll('[data-lang-en]').forEach(el => {
+                el.textContent = el.getAttribute(`data-lang-${language}`);
+            });
+            loadQuestion(currentQuestionIndex);
+        }
+    </script>
+</body>
+</html>
+

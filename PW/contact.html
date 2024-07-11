@@ -1,0 +1,165 @@
+{% extends 'base.html' %}
+
+{% block title %}Contact - Dark Themed Blog{% endblock %}
+
+{% block content %}
+<section id="contact">
+    <h2 style="font-size: 2.5em; text-align: center; margin-bottom: 20px;">Reach me on:</h2>
+
+    <div class="contact-icons">
+        <div class="contact-item">
+            <a href="https://www.youtube.com/" target="_blank">
+                <img src="https://www.vectorico.com/wp-content/uploads/2018/02/youtube-dark-circle.png" alt="YouTube">
+            </a>
+        </div>
+        <div class="contact-item">
+            <a href="https://www.instagram.com/" target="_blank">
+                <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/2/27/CIS-A2K_Instagram_Icon_%28Black%29.svg/1200px-CIS-A2K_Instagram_Icon_%28Black%29.svg.png" alt="Instagram">
+            </a>
+        </div>
+        <div class="contact-item">
+            <a href="https://telegram.me/" target="_blank">
+                <img src="https://cdn.freebiesupply.com/logos/large/2x/telegram-logo-black-and-white.png" alt="Telegram">
+            </a>
+        </div>
+        <div class="contact-item">
+            <a href="mailto:your-email@gmail.com" target="_blank">
+                <img src="https://cdn.icon-icons.com/icons2/652/PNG/512/gmail_icon-icons.com_59877.png" alt="Email">
+            </a>
+        </div>
+    </div>
+
+    <div id="review-section">
+        <div id="leave-review" style="text-align: center;">
+            <h2 style="font-size: 2em; margin-top: 40px;">Leave a Review</h2>
+            <form id="review-form" action="/submit-review" method="POST">
+                <textarea name="review" id="review" cols="30" rows="5" placeholder="Format >>> [Nickname] was/were here. Rest of the text..." style="width: 80%; margin: 20px auto; display: block;"></textarea>
+                <button type="submit" style="display: block; margin: 0 auto; background-color: #ffffff; color: #000000; border: none; padding: 10px 20px; font-size: 1em; cursor: pointer;">Submit Review</button>
+            </form>
+        </div>
+
+        <div id="thank-you" style="text-align: center; display: none;">
+            <h2 style="font-size: 2em; margin-top: 40px; animation: fadeIn 1s ease-in;">Thank you for the review ;)</h2>
+        </div>
+    </div>
+</section>
+
+<style>
+    body {
+        background-color: #000000;
+        color: #ffffff;
+        font-family: 'Montserrat', sans-serif; /* Ensure all fonts use Montserrat */
+        margin: 0;
+        padding: 0;
+        overflow-x: hidden;
+    }
+
+    .contact-icons {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        margin-top: 20px;
+    }
+
+    .contact-item {
+        text-align: center;
+        margin: 0 15px;
+    }
+
+    .contact-item a {
+        color: #ffffff;
+        text-decoration: none;
+        display: block;
+        transition: color 0.3s ease;
+    }
+
+    .contact-item a:hover {
+        color: #ffffff;
+    }
+
+    .contact-item img {
+        width: 100px; /* Adjust width as needed */
+        height: 100px; /* Adjust height as needed */
+        object-fit: cover; /* Ensure the image covers the 100x100 size */
+        border-radius: 50%; /* Optional: Rounded corners */
+        margin-bottom: 10px;
+    }
+
+    #review-section {
+        text-align: center;
+        margin-top: 40px;
+    }
+
+    #leave-review, #thank-you {
+        margin-top: 20px;
+    }
+
+    #leave-review h2, #thank-you h2 {
+        font-size: 2em;
+    }
+
+    #leave-review form {
+        margin-top: 20px;
+    }
+
+    #leave-review textarea {
+        width: 80%;
+        margin: 20px auto;
+        display: block;
+        padding: 10px;
+        font-size: 1em;
+    }
+
+    #leave-review button {
+        background-color: #ffffff;
+        color: #000000;
+        border: none;
+        padding: 10px 20px;
+        font-size: 1em;
+        cursor: pointer;
+    }
+
+    #leave-review button:hover {
+        background-color: #ffffff;
+    }
+
+    /* Fade in animation */
+    @keyframes fadeIn {
+        from {
+            opacity: 0;
+        }
+        to {
+            opacity: 1;
+        }
+    }
+</style>
+
+<script>
+    document.getElementById('review-form').addEventListener('submit', function(event) {
+        event.preventDefault(); // Prevent form submission
+
+        // Prepare form data
+        const formData = new FormData(document.getElementById('review-form'));
+
+        // Send POST request to Flask backend
+        fetch('/submit-review', {
+            method: 'POST',
+            body: formData
+        })
+        .then(response => {
+            if (response.ok) {
+                // Hide the review form
+                document.getElementById('leave-review').style.display = 'none';
+                // Show the thank you message
+                document.getElementById('thank-you').style.display = 'block';
+            } else {
+                console.error('Failed to submit review');
+            }
+        })
+        .catch(error => {
+            console.error('Error submitting review:', error);
+        });
+    });
+</script>
+
+{% endblock %}
