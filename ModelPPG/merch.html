@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Model Website</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background: url('https://cdn.discordapp.com/attachments/1206312067074629702/1261187912821637211/istockphoto-639858174-1024x1024.jpg?ex=66920c46&is=6690bac6&hm=56ab351b66cece48d380b0f892de151de76cb7a77b6a2be7de5a7a60ee5e7d24&') no-repeat center center fixed;
+            background-size: cover;
+            color: #fff;
+            transition: background 0.5s ease-in-out;
+        }
+
+        nav ul {
+            list-style-type: none;
+            background-color: rgba(0, 0, 0, 0.8);
+            padding: 10px;
+            display: flex;
+            justify-content: space-around;
+            margin: 0;
+        }
+
+        nav ul li {
+            display: inline;
+        }
+
+        nav ul li a {
+            color: white;
+            text-decoration: none;
+            padding: 10px 20px;
+            transition: background-color 0.3s ease-in-out, color 0.3s ease-in-out;
+        }
+
+        nav ul li a:hover {
+            background-color: #575757;
+            color: #fff;
+        }
+
+        .content {
+            padding: 20px;
+            background-color: rgba(0, 0, 0, 0.8);
+            margin: 20px;
+            border-radius: 10px;
+            opacity: 0;
+            transition: opacity 1s ease-in-out;
+        }
+
+        .merch-items {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+
+        .merch-item {
+            position: relative;
+            flex: 1 1 200px;
+            border: 1px solid #ddd;
+            padding: 20px;
+            margin: 10px;
+            background-color: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            text-align: center;
+            transition: transform 0.5s ease-in-out;
+            opacity: 0; /* Initially hidden */
+        }
+
+        .merch-item img {
+            width: 100%;
+            max-height: 200px; /* Ensure images do not exceed this height */
+            object-fit: contain;
+        }
+
+        .merch-item:hover {
+            transform: scale(1.1);
+            background-color: rgba(255, 255, 255, 0.3);
+        }
+
+        .overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            opacity: 0;
+            transition: opacity 0.3s ease-in-out;
+        }
+
+        .merch-item:hover .overlay {
+            opacity: 1;
+        }
+
+        .overlay-content {
+            text-align: center;
+        }
+
+        .order-button {
+            display: inline-block;
+            background-color: #1DA1F2;
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            text-align: center;
+            text-decoration: none;
+            font-size: 14px;
+            margin-top: 10px;
+            cursor: pointer;
+            border-radius: 5px;
+            transition: background-color 0.3s ease-in-out, color 0.3s ease-in-out;
+        }
+
+        .order-button:hover {
+            background-color: #0d8bf2;
+        }
+
+        .like-button {
+            display: inline-block;
+            background-color: transparent;
+            color: #ff4b3d; /* Heart color */
+            border: none;
+            padding: 0;
+            text-align: center;
+            text-decoration: none;
+            font-size: 24px;
+            margin-top: 10px;
+            cursor: pointer;
+            transition: color 0.3s ease-in-out;
+        }
+
+        .like-button:hover {
+            color: #ff1300; /* Darker heart color on hover */
+        }
+
+        .social-links ul {
+            list-style-type: none;
+            padding: 0;
+            text-align: center;
+        }
+
+        .social-links ul li {
+            margin: 10px 0;
+        }
+
+        .social-links ul li a {
+            color: #1DA1F2;
+            text-decoration: none;
+            font-size: 20px;
+            transition: color 0.3s ease-in-out;
+        }
+
+        .social-links ul li a:hover {
+            color: #0d8bf2;
+        }
+    </style>
+</head>
+<body>
+    <nav>
+        <ul>
+            <li><a href="/">About</a></li>
+            <li><a href="/merch">Merch</a></li>
+            <li><a href="/social-links">Social Links</a></li>
+        </ul>
+    </nav>
+    <div class="content">
+        {% block content %}
+        <h1>Merchandise</h1>
+        <div class="merch-items">
+            <!-- T-Shirt -->
+            <div class="merch-item">
+                <img src="https://invasion.club/cdn/shop/products/PXL_20211130_023224632.jpg?v=1638260177" alt="T-Shirt">
+                <div class="overlay">
+                    <div class="overlay-content">
+                        <h2>T-Shirt</h2>
+                        <p>Price: $25</p>
+                        <button class="order-button" onclick="window.location.href='https://www.amazon.com/t-shirt'">Order Now</button>
+                        <div class="like-button" onclick="toggleLike(this)">
+                            &#x1F495; <span class="like-count">0</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Hoodie -->
+            <div class="merch-item">
+                <img src="https://i5.walmartimages.com/seo/Adidas-Men-s-Team-Issue-Pullover-Hoodie_5bab2c16-5a62-4acb-b4e3-ef9e68dc5989.5b9f7f8cdd763b766f8f7491feff54a7.jpeg?odnHeight=432&odnWidth=320&odnBg=FFFFFF" alt="Hoodie">
+                <div class="overlay">
+                    <div class="overlay-content">
+                        <h2>Hoodie</h2>
+                        <p>Price: $50</p>
+                        <button class="order-button" onclick="window.location.href='https://www.amazon.com/hoodie'">Order Now</button>
+                        <div class="like-button" onclick="toggleLike(this)">
+                            &#x1F495; <span class="like-count">0</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Cap -->
+            <div class="merch-item">
+                <img src="https://tommy-europe.scene7.com/is/image/TommyEurope/AW0AW15772_BDS_alternate2?$b2c_updp_m_mainImage_1920$" alt="Cap">
+                <div class="overlay">
+                    <div class="overlay-content">
+                        <h2>Cap</h2>
+                        <p>Price: $15</p>
+                        <button class="order-button" onclick="window.location.href='https://www.amazon.com/cap'">Order Now</button>
+                        <div class="like-button" onclick="toggleLike(this)">
+                            &#x1F495; <span class="like-count">0</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Mug -->
+            <div class="merch-item">
+                <img src="https://woodbridgekitchencompany.co.uk/wp-content/uploads/2023/06/513c2e2bb9795fa7e5fe99f4674c9c09834ce5db.jpeg" alt="Mug">
+                <div class="overlay">
+                    <div class="overlay-content">
+                        <h2>Mug</h2>
+                        <p>Price: $10</p>
+                        <button class="order-button" onclick="window.location.href='https://www.amazon.com/mug'">Order Now</button>
+                        <div class="like-button" onclick="toggleLike(this)">
+                            &#x1F495; <span class="like-count">0</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% endblock %}
+    </div>
+    <script>
+        document.addEventListener('DOMContentLoaded', (event) => {
+            document.querySelector('.content').style.opacity = 1;
+
+            const merchItems = document.querySelectorAll('.merch-item');
+            merchItems.forEach((item, index) => {
+                item.style.opacity = 1;
+                item.style.transitionDelay = `${index * 0.1}s`;
+            });
+        });
+
+        window.addEventListener('scroll', () => {
+            const content = document.querySelector('.content');
+            if (window.scrollY > 50) {
+                content.style.background = 'rgba(0, 0, 0, 0.9)';
+            } else {
+                content.style.background = 'rgba(0, 0, 0, 0.8)';
+            }
+        });
+
+        function toggleLike(button) {
+            const likeCount = button.querySelector('.like-count');
+            if (button.classList.contains('liked')) {
+                button.classList.remove('liked');
+                likeCount.textContent = parseInt(likeCount.textContent) - 1;
+                // Here you can add any additional logic for unlike action
+                // For example: Remove from liked list, update server, etc.
+            } else {
+                button.classList.add('liked');
+                likeCount.textContent = parseInt(likeCount.textContent) + 1;
+                // Here you can add any additional logic for like action
+                // For example: Add to liked list, update server, etc.
+            }
+        }
+    </script>
+</body>
+</html>

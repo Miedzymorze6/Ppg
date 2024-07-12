@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Model Website</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background: url('https://cdn.discordapp.com/attachments/1206312067074629702/1261187912821637211/istockphoto-639858174-1024x1024.jpg?ex=66920c46&is=6690bac6&hm=56ab351b66cece48d380b0f892de151de76cb7a77b6a2be7de5a7a60ee5e7d24&') no-repeat center center fixed;
+            background-size: cover;
+            color: #fff;
+            transition: background 0.5s ease-in-out;
+        }
+
+        nav ul {
+            list-style-type: none;
+            background-color: rgba(0, 0, 0, 0.8);
+            padding: 10px;
+            display: flex;
+            justify-content: space-around;
+            margin: 0;
+        }
+
+        nav ul li {
+            display: inline;
+        }
+
+        nav ul li a {
+            color: white;
+            text-decoration: none;
+            padding: 10px 20px;
+            transition: background-color 0.3s ease-in-out, color 0.3s ease-in-out;
+        }
+
+        nav ul li a:hover {
+            background-color: #575757;
+            color: #fff;
+        }
+
+        .content {
+            padding: 20px;
+            background-color: rgba(0, 0, 0, 0.8);
+            margin: 20px;
+            border-radius: 10px;
+            opacity: 0;
+            transition: opacity 1s ease-in-out;
+        }
+
+        .about-container {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            grid-template-rows: repeat(4, auto);
+            gap: 20px;
+        }
+
+        .about-photo {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            grid-column: 1 / 2;
+            grid-row: 1 / 5;
+            margin-right: 5px; /* Adding space between image and text */
+        }
+
+        .about-photo img {
+            width: 100%; /* Ensures image takes full width of its container */
+            height: auto; /* Allows image to scale proportionally */
+            max-height: 100%; /* Ensures image doesn't exceed its container */
+            object-fit: contain; /* Keeps the aspect ratio and fits within the container */
+        }
+
+        .about-info {
+            grid-column: 2 / 5;
+            grid-row: 1 / 5;
+        }
+
+        .quote {
+            margin-top: 20px;
+            font-style: italic;
+            text-align: center;
+            opacity: 0;
+            transition: opacity 1s ease-in-out;
+        }
+
+        .merch-items {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+
+        .merch-item {
+            flex: 1 1 200px;
+            border: 1px solid #ddd;
+            padding: 20px;
+            margin: 10px;
+            background-color: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            text-align: center;
+            transition: transform 0.5s ease-in-out;
+        }
+
+        .social-links ul {
+            list-style-type: none;
+            padding: 0;
+            text-align: center;
+        }
+
+        .social-links ul li {
+            margin: 10px 0;
+        }
+
+        .social-links ul li a {
+            color: #1DA1F2;
+            text-decoration: none;
+            font-size: 20px;
+            transition: color 0.3s ease-in-out;
+        }
+
+        .social-links ul li a:hover {
+            color: #0d8bf2;
+        }
+    </style>
+</head>
+<body>
+    <nav>
+        <ul>
+            <li><a href="/">About</a></li>
+            <li><a href="/merch">Merch</a></li>
+            <li><a href="/social-links">Social Links</a></li>
+        </ul>
+    </nav>
+    <div class="content">
+        {% block content %}{% endblock %}
+    </div>
+    <script>
+        document.addEventListener('DOMContentLoaded', (event) => {
+            document.querySelector('.content').style.opacity = 1;
+
+            const aboutPhoto = document.querySelector('.about-photo img');
+            if (aboutPhoto) {
+                aboutPhoto.style.transform = 'scale(1.1)';
+            }
+
+            const quote = document.querySelector('.quote');
+            if (quote) {
+                quote.style.opacity = 1;
+            }
+
+            const merchItems = document.querySelectorAll('.merch-item');
+            merchItems.forEach((item, index) => {
+                item.style.transform = 'translateY(0)';
+                item.style.transitionDelay = `${index * 0.1}s`;
+            });
+        });
+
+        window.addEventListener('scroll', () => {
+            const content = document.querySelector('.content');
+            if (window.scrollY > 50) {
+                content.style.background = 'rgba(0, 0, 0, 0.9)';
+            } else {
+                content.style.background = 'rgba(0, 0, 0, 0.8)';
+            }
+        });
+    </script>
+</body>
+</html>

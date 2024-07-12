@@ -1,0 +1,96 @@
+{% extends "base.html" %}
+
+{% block content %}
+<style>
+    .social-links {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100vh; /* Adjust the height as needed */
+    }
+
+    .social-links ul {
+        list-style-type: none;
+        padding: 0;
+        display: flex;
+        justify-content: space-around;
+        flex-wrap: wrap; /* Ensure icons wrap properly */
+        max-width: 800px; /* Adjust max-width as needed */
+        width: 100%;
+    }
+
+    .social-links li {
+        text-align: center;
+        flex: 0 0 auto; /* Maintain fixed width for each item */
+        margin: 30px; /* Adjust margin as needed for extra spacing */
+        color: white; /* Make text white */
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; /* Specify a nicer font */
+    }
+
+    .social-links img {
+        width: 160px; /* Four times the size from original 40px */
+        height: 160px; /* Four times the size from original 40px */
+        display: block;
+        margin: 0 auto;
+        transition: transform 0.2s; /* Smooth zoom effect */
+    }
+
+    .social-links img:hover {
+        transform: scale(1.1); /* Zoom effect on hover */
+    }
+
+    .social-links span {
+        display: block;
+        margin-top: 10px;
+        font-size: 16px; /* Adjust the size as needed */
+    }
+
+    .social-links span.bold-white {
+        font-weight: bold;
+        color: white; /* Make the text white */
+    }
+</style>
+
+<div class="social-links">
+    <ul>
+        <li>
+            <a href="https://onlyfans.com/yourprofile" target="_blank">
+                <img src="https://bitcoinist.com/wp-content/uploads/2022/02/OnlyFans_Logo_Icon_Blue.png?fit=400%2C400" alt="OnlyFans" />
+                <span class="bold-white">Anna Ivanovna</span>
+            </a>
+        </li>
+        <li>
+            <a href="https://facebook.com/yourprofile" target="_blank">
+                <img src="https://cdn-icons-png.freepik.com/256/12234/12234051.png?semt=ais_hybrid" alt="Facebook" />
+                <span class="bold-white">Anna Ivanovna</span>
+            </a>
+        </li>
+        <li>
+            <a href="https://instagram.com/yourprofile" target="_blank">
+                <img src="https://cdn-icons-png.flaticon.com/256/1384/1384063.png" alt="Instagram" />
+                <span class="bold-white">Anna_off7</span>
+            </a>
+        </li>
+        <li>
+            <a href="https://twitter.com/yourprofile" target="_blank">
+                <img src="https://cdn-icons-png.flaticon.com/256/3938/3938028.png" alt="Twitter" />
+                <span class="bold-white">Anna Ivanovna</span>
+            </a>
+        </li>
+        <!-- Add more links as needed -->
+    </ul>
+</div>
+
+<script>
+    // Optional: JavaScript to handle any additional interactions or functionality
+    document.addEventListener('DOMContentLoaded', function() {
+        // Example: Log a message when an icon is clicked
+        const links = document.querySelectorAll('.social-links a');
+        links.forEach(link => {
+            link.addEventListener('click', function() {
+                console.log(`Navigating to: ${this.href}`);
+            });
+        });
+    });
+</script>
+{% endblock %}
