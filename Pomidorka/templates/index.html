@@ -1,0 +1,424 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dark Themed Pomodoro Timer</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #1e1e1e;
+            color: #ffffff;
+            display: flex;
+            height: 100vh;
+            margin: 0;
+            overflow: hidden;
+        }
+        .container {
+            display: flex;
+            width: 100%;
+        }
+        .left, .right {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            padding: 20px;
+        }
+        .left {
+            background-color: #2a2a2a;
+            max-width: 300px;
+        }
+        .tabs {
+            display: flex;
+            flex-direction: column;
+            margin-bottom: 20px;
+        }
+        .tabs button {
+            padding: 10px;
+            border: none;
+            border-radius: 5px;
+            background-color: #3a3a3a;
+            color: #ffffff;
+            font-size: 16px;
+            cursor: pointer;
+            margin-bottom: 10px;
+            transition: background-color 0.3s;
+        }
+        .tabs button.active {
+            background-color: #555555;
+        }
+        .tab-content {
+            display: none;
+            flex: 1;
+            padding: 20px;
+            flex-direction: column;
+            align-items: center;
+        }
+        .tab-content.active {
+            display: flex;
+        }
+        .timer {
+            font-size: 48px;
+            margin-bottom: 20px;
+        }
+        .buttons {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+        }
+        .buttons button {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            background-color: #3a3a3a;
+            color: #ffffff;
+            font-size: 16px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        .buttons button:hover {
+            background-color: #555555;
+        }
+        .buttons button:disabled {
+            background-color: #2a2a2a;
+            cursor: not-allowed;
+        }
+        .overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.7);
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+        .overlay.active {
+            display: flex;
+        }
+        .overlay-content {
+            background: #2a2a2a;
+            padding: 20px;
+            border-radius: 10px;
+            color: #ffffff;
+            width: 300px;
+            text-align: center;
+        }
+        .overlay-content input {
+            margin-bottom: 10px;
+            padding: 5px;
+            border: 1px solid #555555;
+            border-radius: 5px;
+            background-color: #2a2a2a;
+            color: #ffffff;
+            width: 100%;
+        }
+        .overlay-content label {
+            margin-bottom: 5px;
+        }
+        .overlay-content button {
+            margin-top: 10px;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            background-color: #3a3a3a;
+            color: #ffffff;
+            font-size: 16px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        .overlay-content button:hover {
+            background-color: #555555;
+        }
+        #modifyBtn {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 8px;
+            background-color: #4a4a4a;
+            color: #ffffff;
+            font-size: 18px;
+            cursor: pointer;
+            transition: background-color 0.3s, transform 0.3s;
+            margin-top: auto; /* Align to bottom */
+        }
+        #modifyBtn:hover {
+            background-color: #6a6a6a;
+        }
+        #modifyBtn:active {
+            transform: scale(0.95);
+        }
+        .local-time {
+            font-size: 24px;
+            text-align: center;
+            margin-top: 20px;
+        }
+        .chart-container {
+            flex: 1;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+        canvas {
+            width: 100%;
+            max-width: 600px;
+            height: 300px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="left">
+            <div class="tabs">
+                <button class="tab-button active" data-tab="pomodoroTab">Pomodoro</button>
+                <button class="tab-button" data-tab="shortBreakTab">Short Break</button>
+                <button class="tab-button" data-tab="longBreakTab">Long Break</button>
+            </div>
+            <button id="modifyBtn">Modify</button>
+        </div>
+        <div class="right">
+            <div id="pomodoroTab" class="tab-content active">
+                <h1>Pomodoro Timer</h1>
+                <div class="timer" id="pomodoroTimer">25:00</div>
+                <div class="buttons">
+                    <button id="startPomodoroBtn">Start</button>
+                    <button id="resetPomodoroBtn">Reset</button>
+                </div>
+            </div>
+            <div id="shortBreakTab" class="tab-content">
+                <h1>Short Break Timer</h1>
+                <div class="timer" id="shortBreakTimer">05:00</div>
+                <div class="buttons">
+                    <button id="startShortBreakBtn">Start</button>
+                    <button id="resetShortBreakBtn">Reset</button>
+                </div>
+            </div>
+            <div id="longBreakTab" class="tab-content">
+                <h1>Long Break Timer</h1>
+                <div class="timer" id="longBreakTimer">15:00</div>
+                <div class="buttons">
+                    <button id="startLongBreakBtn">Start</button>
+                    <button id="resetLongBreakBtn">Reset</button>
+                </div>
+            </div>
+            <div class="local-time" id="localTime"></div>
+            <div class="chart-container">
+                <canvas id="energyChart"></canvas>
+            </div>
+        </div>
+    </div>
+    <div id="overlay" class="overlay">
+        <div class="overlay-content">
+            <h1>Modify Timings</h1>
+            <label for="pomodoroTime">Pomodoro Time (min):</label>
+            <input type="number" id="pomodoroTime" value="25">
+            <label for="shortBreakTime">Short Break Time (min):</label>
+            <input type="number" id="shortBreakTime" value="5">
+            <label for="longBreakTime">Long Break Time (min):</label>
+            <input type="number" id="longBreakTime" value="15">
+            <button id="applySettingsBtn">Apply</button>
+            <button id="closeOverlayBtn">Close</button>
+        </div>
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+    let pomodoroTimerTime = 25 * 60;
+    let shortBreakTimerTime = 5 * 60;
+    let longBreakTimerTime = 15 * 60;
+    let pomodoroInterval, shortBreakInterval, longBreakInterval;
+
+    const pomodoroTimerElement = document.getElementById('pomodoroTimer');
+    const shortBreakTimerElement = document.getElementById('shortBreakTimer');
+    const longBreakTimerElement = document.getElementById('longBreakTimer');
+
+    const startPomodoroBtn = document.getElementById('startPomodoroBtn');
+    const resetPomodoroBtn = document.getElementById('resetPomodoroBtn');
+    const startShortBreakBtn = document.getElementById('startShortBreakBtn');
+    const resetShortBreakBtn = document.getElementById('resetShortBreakBtn');
+    const startLongBreakBtn = document.getElementById('startLongBreakBtn');
+    const resetLongBreakBtn = document.getElementById('resetLongBreakBtn');
+
+    const pomodoroTimeInput = document.getElementById('pomodoroTime');
+    const shortBreakTimeInput = document.getElementById('shortBreakTime');
+    const longBreakTimeInput = document.getElementById('longBreakTime');
+    const overlay = document.getElementById('overlay');
+    const applySettingsBtn = document.getElementById('applySettingsBtn');
+    const closeOverlayBtn = document.getElementById('closeOverlayBtn');
+
+    const tabButtons = document.querySelectorAll('.tab-button');
+    const tabContents = document.querySelectorAll('.tab-content');
+
+    let energyData = [{ x: 0, y: 100 }];
+    const chartCtx = document.getElementById('energyChart').getContext('2d');
+    const energyChart = new Chart(chartCtx, {
+        type: 'line',
+        data: {
+            datasets: [{
+                label: 'Energy Level',
+                borderColor: 'red',
+                backgroundColor: 'rgba(255, 0, 0, 0.1)',
+                data: energyData,
+                fill: true,
+            }]
+        },
+        options: {
+            scales: {
+                x: {
+                    type: 'linear',
+                    position: 'bottom',
+                    title: {
+                        display: true,
+                        text: 'Time (seconds)'
+                    }
+                },
+                y: {
+                    beginAtZero: true,
+                    max: 100,
+                    title: {
+                        display: true,
+                        text: 'Energy Level'
+                    }
+                }
+            }
+        }
+    });
+
+    function updateTimerDisplay(timerElement, time) {
+        const minutes = Math.floor(time / 60).toString().padStart(2, '0');
+        const seconds = (time % 60).toString().padStart(2, '0');
+        timerElement.textContent = `${minutes}:${seconds}`;
+    }
+
+    function startTimer(timerTime, timerElement, interval, isBreak) {
+        let startTime = Date.now();
+        interval = setInterval(() => {
+            let elapsed = Math.floor((Date.now() - startTime) / 1000);
+            let remainingTime = timerTime - elapsed;
+            updateTimerDisplay(timerElement, remainingTime);
+            updateEnergyLevel(isBreak, elapsed);
+            if (remainingTime <= 0) {
+                clearInterval(interval);
+            }
+        }, 1000);
+        return interval;
+    }
+
+    function updateEnergyLevel(isBreak, elapsed) {
+        let lastDataPoint = energyData[energyData.length - 1];
+        let newX = lastDataPoint.x + elapsed;
+        let newY;
+        if (isBreak) {
+            newY = lastDataPoint.y + (elapsed / 600 * 100); // linear increase over 10 minutes
+            energyChart.data.datasets[0].borderColor = 'green';
+            energyChart.data.datasets[0].backgroundColor = 'rgba(0, 255, 0, 0.1)';
+        } else {
+            newY = lastDataPoint.y - (elapsed * elapsed / 160000); // parabolic decrease over 40 minutes
+            energyChart.data.datasets[0].borderColor = 'red';
+            energyChart.data.datasets[0].backgroundColor = 'rgba(255, 0, 0, 0.1)';
+        }
+        newY = Math.max(0, Math.min(100, newY));
+        energyData.push({ x: newX, y: newY });
+        energyChart.update();
+    }
+
+    function resetTimer(timerElement, defaultTime, interval) {
+        clearInterval(interval);
+        updateTimerDisplay(timerElement, defaultTime);
+    }
+
+    function resetAllTimers() {
+        resetTimer(pomodoroTimerElement, pomodoroTimerTime, pomodoroInterval);
+        resetTimer(shortBreakTimerElement, shortBreakTimerTime, shortBreakInterval);
+        resetTimer(longBreakTimerElement, longBreakTimerTime, longBreakInterval);
+    }
+
+    function handleTabChange(event) {
+        const targetTab = event.target.dataset.tab;
+        tabButtons.forEach(button => button.classList.remove('active'));
+        tabContents.forEach(content => content.classList.remove('active'));
+        event.target.classList.add('active');
+        document.getElementById(targetTab).classList.add('active');
+    }
+
+    tabButtons.forEach(button => button.addEventListener('click', handleTabChange));
+
+    startPomodoroBtn.addEventListener('click', () => {
+        resetAllTimers();
+        clearInterval(pomodoroInterval);
+        pomodoroInterval = startTimer(pomodoroTimerTime, pomodoroTimerElement, pomodoroInterval, false);
+    });
+
+    resetPomodoroBtn.addEventListener('click', () => {
+        resetTimer(pomodoroTimerElement, pomodoroTimerTime, pomodoroInterval);
+        pomodoroTimerTime = 25 * 60;
+    });
+
+    startShortBreakBtn.addEventListener('click', () => {
+        resetAllTimers();
+        clearInterval(shortBreakInterval);
+        shortBreakInterval = startTimer(shortBreakTimerTime, shortBreakTimerElement, shortBreakInterval, true);
+    });
+
+    resetShortBreakBtn.addEventListener('click', () => {
+        resetTimer(shortBreakTimerElement, shortBreakTimerTime, shortBreakInterval);
+        shortBreakTimerTime = 5 * 60;
+    });
+
+    startLongBreakBtn.addEventListener('click', () => {
+        resetAllTimers();
+        clearInterval(longBreakInterval);
+        longBreakInterval = startTimer(longBreakTimerTime, longBreakTimerElement, longBreakInterval, true);
+    });
+
+    resetLongBreakBtn.addEventListener('click', () => {
+        resetTimer(longBreakTimerElement, longBreakTimerTime, longBreakInterval);
+        longBreakTimerTime = 15 * 60;
+    });
+
+    const modifyBtn = document.getElementById('modifyBtn');
+    modifyBtn.addEventListener('click', () => {
+        overlay.classList.add('active');
+    });
+
+    closeOverlayBtn.addEventListener('click', () => {
+        overlay.classList.remove('active');
+    });
+
+    applySettingsBtn.addEventListener('click', () => {
+        const newPomodoroTime = parseInt(pomodoroTimeInput.value) * 60;
+        const newShortBreakTime = parseInt(shortBreakTimeInput.value) * 60;
+        const newLongBreakTime = parseInt(longBreakTimeInput.value) * 60;
+
+        pomodoroTimerTime = newPomodoroTime;
+        shortBreakTimerTime = newShortBreakTime;
+        longBreakTimerTime = newLongBreakTime;
+
+        resetAllTimers();
+        updateTimerDisplay(pomodoroTimerElement, pomodoroTimerTime);
+        updateTimerDisplay(shortBreakTimerElement, shortBreakTimerTime);
+        updateTimerDisplay(longBreakTimerElement, longBreakTimerTime);
+
+        overlay.classList.remove('active');
+    });
+
+    updateTimerDisplay(pomodoroTimerElement, pomodoroTimerTime);
+    updateTimerDisplay(shortBreakTimerElement, shortBreakTimerTime);
+    updateTimerDisplay(longBreakTimerElement, longBreakTimerTime);
+
+    function updateLocalTime() {
+        const now = new Date();
+        const localTimeElement = document.getElementById('localTime');
+        const hours = now.getHours().toString().padStart(2, '0');
+        const minutes = now.getMinutes().toString().padStart(2, '0');
+        const seconds = now.getSeconds().toString().padStart(2, '0');
+        localTimeElement.textContent = `Local Time: ${hours}:${minutes}:${seconds}`;
+    }
+
+    setInterval(updateLocalTime, 1000);
+    updateLocalTime();
+</script>
+
+</body>
+</html>
