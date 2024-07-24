@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Baby Name Chooser</title>
+    <style>
+        body {
+            background-color: #121212;
+            color: #e0e0e0;
+            font-family: Arial, sans-serif;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .top-bar {
+            display: flex;
+            width: 100%;
+            justify-content: center;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .navbar {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+            margin-right: 20px;
+        }
+
+        .navbar img {
+            background-color: #333;
+            border: none;
+            padding: 10px;
+            margin: 5px;
+            cursor: pointer;
+            width: 50px;
+            height: 50px;
+        }
+
+        .navbar img:hover {
+            background-color: #555;
+        }
+
+        #map {
+            margin: 20px auto;
+            max-width: 800px;
+            height: 500px;
+        }
+
+        #filters {
+            display: flex;
+            justify-content: center;
+            margin-top: 10px;
+        }
+
+        #filters input {
+            padding: 10px;
+            margin: 5px;
+            background-color: #333;
+            color: #e0e0e0;
+            border: none;
+            outline: none;
+        }
+
+        #filters input:hover {
+            background-color: #555;
+        }
+
+        #names {
+            margin-top: 20px;
+            font-size: 18px;
+            text-align: center;
+            width: 80%;
+        }
+    </style>
+    <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+    <script type="text/javascript">
+        google.charts.load('current', {
+            'packages': ['geochart'],
+            'mapsApiKey': 'YOUR_GOOGLE_MAPS_API_KEY'
+        });
+        google.charts.setOnLoadCallback(drawRegionsMap);
+
+        const names = {
+    "FR": {
+        "male": ["Jean", "Pierre", "Louis", "Michel", "Alain", "Philippe", "Claude", "Jacques", "François", "Henri", "Bernard", "Georges", "André", "Robert", "Paul", "Louis", "Étienne", "Charles", "Marcel", "Gérard", "Dominique", "Nicolas", "Julien", "Pierre", "Luc", "Arnaud", "Éric", "Laurent", "Xavier", "Yann", "Julien", "Mathieu", "Cédric", "Antoine", "Christophe", "Sébastien", "Guillaume", "Stéphane", "Benoît", "Frédéric", "Olivier", "David", "Christophe", "Thierry", "Romain", "Damien", "Jérôme", "Patrick", "Ludovic", "Philippe", "Cyril", "Denis", "Rémi", "Renaud", "Marin", "Gaspard", "Hugo", "Léo", "Arthur", "Oscar", "Martin", "Lucas", "Enzo", "Nathan", "Maxime", "Baptiste", "Simon", "Noé", "Clément", "Raphaël", "Axel", "Sacha", "Maxence", "Ethan", "Luca", "Marius", "Paul", "Victor", "Élie", "Jules", "Thomas"],
+        "female": ["Marie", "Camille", "Sophie", "Isabelle", "Nathalie", "Monique", "Hélène", "Martine", "Valérie", "Sylvie", "Caroline", "Christine", "Nicole", "Anne", "Catherine", "Françoise", "Élisabeth", "Laura", "Sandrine", "Évelyne", "Geneviève", "Josiane", "Mireille", "Véronique", "Joëlle", "Sabrina", "Aurélie", "Claudine", "Bénédicte", "Céline", "Delphine", "Alexandra", "Valérie", "Lydia", "Nadine", "Cécile", "Patricia", "Agnes", "Roselyne", "Émilie", "Ingrid", "Véronique", "Mélanie", "Solange", "Nina", "Camille", "Léa", "Chloé", "Julie", "Lola", "Anaïs", "Alice", "Lucie", "Clara", "Léna", "Amandine", "Louise", "Sophie", "Élise", "Maëlys", "Lili", "Océane", "Manon", "Margaux", "Noémie", "Justine", "Pauline", "Jade", "Émilie", "Lilou"],
+    },
+    "DE": {
+        "male": ["Hans", "Fritz", "Karl", "Johann", "Wilhelm", "Ernst", "Otto", "Heinrich", "Friedrich", "Walter", "Günter", "Jürgen", "Klaus", "Rudolf", "Manfred", "Hermann", "Reinhard", "Horst", "Gerhard", "Eberhard", "Siegfried", "Bernd", "Martin", "Thomas", "Michael", "Stefan", "Andreas", "Christian", "Frank", "Wolfgang", "Uwe", "Rainer", "Joachim", "Oliver", "Jens", "Harald", "Rolf", "Matthias", "Peter", "Sven", "Patrick", "Lars", "Tobias", "Dirk", "Eckhard", "Hugo", "Friedrich", "Kurt", "Felix", "Leon", "Max", "Noah", "Emil", "Oskar", "Paul", "Jakob", "Luca", "Philipp", "Anton", "Benjamin", "Jakob", "Samuel", "Julian", "Niklas", "Maximilian", "Marius", "Jannis", "Lorenz", "Tim", "Finn", "Simon", "Matteo"],
+        "female": ["Mia", "Emma", "Hannah", "Sophia", "Anna", "Lena", "Lea", "Emilia", "Marie", "Lina", "Clara", "Sophie", "Hannah", "Johanna", "Lina", "Mila", "Lara", "Isabella", "Nina", "Paula", "Charlotte", "Alina", "Sarah", "Luisa", "Mia", "Laura", "Elena", "Maja", "Jana", "Lisa", "Viktoria", "Amina", "Melina", "Anja", "Selina", "Janina", "Sina", "Antonia", "Laura", "Klara", "Maria", "Lia", "Nora", "Matilda", "Sina", "Franziska", "Amelie", "Evelyn", "Gina", "Greta", "Jana", "Lilly", "Marlene", "Olivia", "Saskia", "Lotte", "Nina", "Isabell", "Juliane", "Tabea", "Jule", "Ronja", "Nina", "Elisabeth", "Eleni"],
+    },
+    "IT": {
+        "male": ["Luca", "Matteo", "Giovanni", "Alessandro", "Francesco", "Andrea", "Marco", "Giuseppe", "Antonio", "Matteo", "Roberto", "Giorgio", "Stefano", "Paolo", "Vincenzo", "Alessio", "Nicola", "Riccardo", "Saverio", "Edoardo", "Lorenzo", "Fabio", "Simone", "Daniele", "Gianluca", "Tommaso", "Michele", "Mario", "Pietro", "Enrico", "Gabriele", "Raffaele", "Diego", "Giuliano", "Sebastiano", "Leonardo", "Luca", "Giulio", "Carlo", "Ruggero", "Antonio", "Gino", "Valerio", "Andrea", "Cristian", "Giuseppe", "Emilio", "Vittorio", "Orlando", "Gianfranco", "Salvatore", "Giancarlo", "Alfredo", "Luciano", "Pino", "Mario", "Stefano", "Antonio"],
+        "female": ["Sofia", "Giulia", "Aurora", "Martina", "Sara", "Alice", "Ginevra", "Francesca", "Elena", "Chiara", "Irene", "Laura", "Valentina", "Greta", "Beatrice", "Camilla", "Anna", "Emma", "Marta", "Giada", "Arianna", "Carla", "Flavia", "Ludovica", "Paola", "Viviana", "Elisa", "Giorgia", "Livia", "Rosaria", "Rita", "Alessandra", "Barbara", "Silvia", "Claudia", "Margherita", "Noemi", "Sabrina", "Lucia", "Marina", "Daniela", "Pia", "Emanuela", "Angela", "Franca", "Elisa", "Patrizia", "Maddalena", "Serena", "Fabiola", "Deborah", "Adele", "Antonella", "Lorenza", "Annalisa", "Matilde", "Loredana"],
+    },
+    "RU": {
+        "male": ["Ivan", "Dmitry", "Alexey", "Sergey", "Vladimir", "Andrei", "Yuri", "Nikolai", "Pavel", "Oleg", "Victor", "Igor", "Maxim", "Roman", "Mikhail", "Egor", "Aleksei", "Vasily", "Stanislav", "Boris", "Leonid", "Daniil", "Yaroslav", "Vladislav", "Kirill", "Artem", "Maksim", "Konstantin", "Fedor", "Vladislav", "Nikita", "Gennady", "Anatoly", "Rostislav", "Gleb", "Yevgeny", "Alexandr", "Yaroslav", "Ilya", "Evgeny", "Semyon", "Denis", "Aleksandr", "Gleb", "Sergei", "Yuriy", "Timofey", "Vladislav", "Valery", "Vadim", "Oleg", "Stepan"],
+        "female": ["Anna", "Elena", "Olga", "Maria", "Irina", "Natalia", "Svetlana", "Yulia", "Tatyana", "Ekaterina", "Oksana", "Larisa", "Marina", "Galina", "Alina", "Elvira", "Daria", "Polina", "Veronika", "Inna", "Ksenia", "Sofia", "Vera", "Valentina", "Nina", "Yekaterina", "Ludmila", "Sofia", "Margarita", "Tatiana", "Mila", "Elizaveta", "Anastasia", "Svetlana", "Victoria", "Irina", "Alyona", "Nadezhda", "Oksana", "Diana", "Lilia", "Nina", "Yulia", "Larisa", "Natalia", "Elena", "Marina", "Valeria", "Olga", "Galina", "Lyudmila", "Kira", "Nadezhda", "Evelina", "Anna"],
+    },
+    "PL": {
+        "male": ["Jan", "Piotr", "Krzysztof", "Andrzej", "Marek", "Wojciech", "Jakub", "Grzegorz", "Tomasz", "Ryszard", "Dariusz", "Adam", "Zbigniew", "Mariusz", "Łukasz", "Jacek", "Maciej", "Aleksander", "Michał", "Paweł", "Kamil", "Sławomir", "Witold", "Krzysztof", "Robert", "Sebastian", "Stanislaw", "Roman", "Józef", "Jarosław", "Artur", "Krzysztof", "Jacek", "Andrzej", "Tadeusz", "Jerzy", "Damian", "Konrad", "Leon", "Filip", "Bartosz", "Igor", "Mieczysław", "Stefan", "Sławomir", "Zygmunt", "Norbert", "Mieczysław", "Czesław", "Ryszard", "Henryk"],
+        "female": ["Anna", "Maria", "Katarzyna", "Agnieszka", "Magdalena", "Ewa", "Joanna", "Justyna", "Martyna", "Aleksandra", "Barbara", "Grażyna", "Danuta", "Elżbieta", "Małgorzata", "Sylwia", "Dorota", "Kinga", "Beata", "Iwona", "Urszula", "Natalia", "Hanna", "Katarzyna", "Kamila", "Wanda", "Renata", "Lucyna", "Marta", "Edyta", "Jolanta", "Krystyna", "Olga", "Maria", "Joanna", "Lidia", "Irmina", "Marlena", "Halina", "Sonia", "Mieczysława", "Jadwiga", "Bernadeta", "Izabela", "Rita", "Maja", "Alina", "Patrycja", "Ewa", "Sylwia", "Agnieszka"],
+    },
+    "UA": {
+        "male": ["Oleksandr", "Dmytro", "Andriy", "Viktor", "Mykola", "Serhiy", "Yuriy", "Taras", "Volodymyr", "Oleh", "Vladyslav", "Yevhen", "Igor", "Valeriy", "Serhiy", "Roman", "Petro", "Anatoliy", "Oleksiy", "Yaroslav", "Bohdan", "Danyl", "Kyrylo", "Danylo", "Yevhen", "Sviatoslav", "Andriy", "Ihor", "Vladyslav", "Orest", "Petro", "Taras", "Maksym", "Yuriy", "Vladyslav", "Vasily", "Vitaliy", "Denys", "Volodymyr", "Mykhailo", "Artem", "Leonid", "Yaroslav", "Oleg", "Dmitry", "Oleh", "Viktor", "Borys", "Serhiy"],
+        "female": ["Olena", "Kateryna", "Nadiya", "Svitlana", "Tetyana", "Yulia", "Iryna", "Oksana", "Valentyna", "Nina", "Lyudmyla", "Tetiana", "Irina", "Larysa", "Halyna", "Olesya", "Elena", "Ksenia", "Liliya", "Daria", "Anastasiya", "Sofia", "Margarita", "Lilia", "Ira", "Victoria", "Tetyana", "Yana", "Oksana", "Iryna", "Natalia", "Katerina", "Lidiya", "Marianna", "Yulia", "Oksana", "Svetlana", "Lilia", "Daryna", "Olha", "Tetiana", "Alina", "Sofiya", "Elizaveta", "Mira", "Alina", "Iryna", "Anastasia", "Yevhenia", "Nina"],
+    },
+    "RO": {
+        "male": ["Andrei", "Mihai", "Ion", "Gabriel", "Radu", "Vasile", "Cristian", "Daniel", "George", "Alexandru", "Stefan", "Florin", "Paul", "Nicolae", "Adrian", "Lucian", "Emil", "Marian", "Doru", "Rares", "Silvian", "Ioan", "Cătălin", "Radu", "Valentin", "Marius", "Teodor", "Ionut", "Nicu", "Eugen", "Ionut", "Victor", "Mihail", "Nicu", "Ilie", "Virgil", "Liviu", "Claudiu", "Ovidiu", "Cornel", "Gheorghe", "Aurel", "Nicolae", "Florian", "Sorin", "Dan", "Vlad", "Cătălin", "Răzvan"],
+        "female": ["Maria", "Elena", "Ana", "Ioana", "Gabriela", "Simona", "Andreea", "Madalina", "Carmen", "Monica", "Roxana", "Adriana", "Loredana", "Cristina", "Elena", "Alexandra", "Florina", "Liliana", "Mihaela", "Raluca", "Diana", "Sonia", "Lidia", "Alina", "Oana", "Mirela", "Petronela", "Veronica", "Daniela", "Anca", "Nicoleta", "Camelia", "Sanda", "Lavinia", "Larisa", "Ana", "Irina", "Maria", "Natalia", "Gina", "Roxana", "Marcela", "Denisa", "Ramona", "Anca", "Sabrina", "Mona", "Monica"],
+    },
+    "HU": {
+        "male": ["László", "István", "Gábor", "János", "Zoltán", "Ferenc", "Károly", "András", "Miklós", "Péter", "József", "Béla", "Márton", "Lajos", "György", "Sándor", "Tamás", "Róbert", "Zoltán", "Mihály", "Csaba", "Ádám", "Bence", "Bálint", "Zoltán", "Márk", "Gergely", "Béla", "Imre", "Dávid", "János", "László", "Lőrinc", "Károly", "Miklós", "Pál", "Zsolt", "Ferenc", "Róbert", "Péter", "Márton", "Krisztián", "Ernő", "Sándor", "Kálmán", "Gergely", "Sándor"],
+        "female": ["Erzsébet", "Anna", "Mária", "Katalin", "Judit", "Zsuzsanna", "Andrea", "Éva", "Gabriella", "Krisztina", "Lilla", "Rita", "Mónika", "Rózsa", "Sára", "Csilla", "Júlia", "Hajnalka", "Ildikó", "Nóra", "Melinda", "Tímea", "Mária", "Léna", "Dóra", "Anna", "Eszter", "Mónika", "Adél", "Katalin", "Mária", "Erika", "Judit", "Sára", "Rita", "Ágnes", "Júlia", "Gabriella", "Andrea", "Krisztina", "Emese", "Rita", "Mária", "Márta", "Anikó", "Csilla", "Dóra"],
+    },
+    "BG": {
+        "male": ["Ivan", "Georgi", "Dimitar", "Aleksandar", "Vladimir", "Nikolay", "Petar", "Stefan", "Kostadin", "Radoslav", "Bozhidar", "Todor", "Yordan", "Anton", "Mihail", "Vasil", "Kaloyan", "Zdravko", "Tsvetan", "Deyan", "Svetoslav", "Hristo", "Simeon", "Rumen", "Nasko", "Ilian", "Lyubomir", "Emil", "Velizar", "Borislav", "Stefan", "Vasil", "Deyan", "Mladen", "Ivaylo", "Todor", "Iliya", "Dimo", "Viktor", "Radoslav", "Tsvetan", "Georgi", "Yordan", "Ivan", "Dimitar", "Stoyan"],
+        "female": ["Maria", "Elena", "Desislava", "Anna", "Katerina", "Ivanka", "Radoslava", "Stoyanka", "Vesela", "Maya", "Diana", "Neli", "Zlatka", "Nina", "Svetlana", "Lilia", "Kremena", "Rositsa", "Dobrina", "Petya", "Ludmila", "Reni", "Margarita", "Lyudmila", "Mila", "Nadia", "Vanya", "Teodora", "Mariyana", "Sylvia", "Gergana", "Galina", "Elitsa", "Tanya", "Raya", "Vera", "Vasilka", "Maya", "Rada", "Tatiana", "Nadya", "Valentina", "Lidia", "Silvia", "Rali", "Maya", "Radka", "Svetlana", "Daniella"],
+    },
+    "ES": {
+        "male": ["Antonio", "José", "Francisco", "Manuel", "David", "Juan", "Francisco", "Javier", "Daniel", "Francisco", "José Antonio", "Francisco Javier", "Carlos", "Alejandro", "Luis", "Ángel", "Miguel", "Rafael", "Pedro", "José Luis", "Mario", "Jesús", "Rubén", "José Manuel", "Guillermo", "Andrés", "Tomás", "Emilio", "Álvaro", "Vicente", "Ramón", "Antonio", "Enrique", "Gerardo", "Vicente", "Héctor", "Santiago", "Julio", "Eduardo", "Juan Carlos", "Jorge", "Pablo", "Víctor", "Raúl", "Félix", "Felipe", "José María", "Rodrigo", "Isaac", "Óscar", "Emilio", "Rafael", "Rafael"],
+        "female": ["María", "Carmen", "Isabel", "Ana", "Francisca", "Dolores", "Laura", "Josefa", "Margarita", "Juana", "Teresa", "Cristina", "Rosa", "Marta", "Concepción", "Pilar", "Adela", "Ángeles", "Lidia", "María Dolores", "Miriam", "Inmaculada", "Raquel", "Elena", "Silvia", "Esther", "Carolina", "Mercedes", "Nuria", "Paula", "Blanca", "Claudia", "Gabriela", "Lorena", "Regina", "Celia", "Beatriz", "Natalia", "Alicia", "María José", "Begoña", "Fabiola", "Gema", "María del Carmen", "Susana", "María Teresa", "Verónica", "Ana María"],
+    },
+    "PT": {
+        "male": ["João", "Miguel", "Francisco", "José", "Pedro", "António", "Carlos", "Paulo", "Rui", "Bruno", "Filipe", "Ricardo", "Nuno", "Hugo", "Diogo", "João Pedro", "André", "Sérgio", "Tiago", "Daniel", "Francisco", "Mário", "Gustavo", "Eduardo", "Roberto", "Vítor", "Leonardo", "Alexandre", "Jorge", "Miguel", "Duarte", "Joaquim", "Adriano", "Augusto", "António", "Alex", "António", "Guilherme", "David", "Raul", "José Miguel", "Vítor", "Hélder", "Fábio", "Luís", "Armando", "Luís", "Lourenço"],
+        "female": ["Maria", "Ana", "Leonor", "Sofia", "Matilde", "Carla", "Sara", "Cristina", "Isabel", "Patrícia", "Rita", "Joana", "Célia", "Beatriz", "Marta", "Sílvia", "Ana Paula", "Paula", "Lúcia", "Teresa", "Margarida", "Lúcia", "Rita", "Graça", "Joana", "Diana", "Adriana", "Maria João", "Ana Sofia", "Ana Catarina", "Mariana", "Elsa", "Simone", "Sandra", "Isabel", "Raquel", "Lina", "Verónica", "Gisela", "Ana Rita", "Liliana", "Olga", "Rosa", "Silvia", "Carla", "Cláudia", "Teresa", "Alice", "Laura", "Núria", "Daniela"],
+    },
+    "NL": {
+        "male": ["Liam", "Noah", "Lucas", "Daan", "Milan", "Jesse", "Bram", "Sem", "Max", "Finn", "Ties", "Ruben", "Mees", "Thomas", "Jack", "Joris", "Sven", "Niels", "Luuk", "Bo", "Ethan", "Hugo", "Jelle", "Gijs", "Mick", "Jasper", "Olivier", "Mats", "Cas", "Julian", "Luca", "Roan", "Kai", "Victor", "Robin", "Daniel", "Maxim", "Lars", "Wout", "Rik", "Kees", "Sander", "Pim", "Timo", "Tijn", "Stefan", "Milan", "Joris", "Quentin", "Dirk", "Joris"],
+        "female": ["Emma", "Mia", "Sophie", "Julia", "Olivia", "Tess", "Lotte", "Sara", "Anna", "Eva", "Samantha", "Mara", "Lina", "Zoe", "Fleur", "Laura", "Nina", "Kiki", "Pien", "Elin", "Luna", "Maud", "Amber", "Iris", "Rosa", "Nina", "Isabella", "Romy", "Mila", "Lana", "Demi", "Lisa", "Danielle", "Esmee", "Sanne", "Lara", "Janneke", "Meryem", "Charlotte", "Hanne", "Roos", "Liselot", "Sofie", "Amara", "Anouk", "Yara", "Selma", "Fien", "Jasmijn", "Norah"],
+    },
+    "BE": {
+        "male": ["Liam", "Noah", "Lucas", "Milan", "Ethan", "Jasper", "Lars", "Victor", "Julian", "Matteo", "Bram", "Thomas", "Joris", "Niels", "Sam", "Tijs", "Bo", "Max", "Olivier", "Ruben", "Finn", "Jelle", "Mick", "Gijs", "Luuk", "Daan", "Mats", "Timo", "Rik", "Stijn", "Luca", "Jens", "Nino", "Yannick", "Kobe", "Sander", "Daan", "Simon", "Hugo", "David", "Arthur", "Emiel", "Joris", "Ruben", "Sander", "Milan", "Noah", "Liam", "Victor", "Jasper"],
+        "female": ["Emma", "Sophie", "Olivia", "Mia", "Ella", "Julia", "Lotte", "Luna", "Nina", "Sara", "Mila", "Lena", "Iris", "Eva", "Marie", "Alice", "Fleur", "Elena", "Zoë", "Maaike", "Amber", "Mila", "Elise", "Laura", "Mara", "Anouk", "Lies", "Louise", "Tess", "Pien", "Lara", "Meryem", "Norah", "Naomi", "Fien", "Yara", "Nina", "Rosa", "Jade", "Hanne", "Rosalie", "Danielle", "Nora", "Elise", "Fien", "Jasmijn", "Selma", "Lia"],
+    },
+    "CH": {
+        "male": ["Luca", "Noah", "Leon", "Luca", "Paul", "Elias", "Max", "Julian", "Tim", "Simon", "David", "Matteo", "Liam", "Nico", "Sebastian", "Adrian", "Felix", "Benjamin", "Jakob", "Alexander"],
+        "female": ["Sofia", "Emma", "Mia", "Anna", "Elena", "Lina", "Laura", "Nina", "Sophie", "Lea", "Clara", "Lara", "Amelie", "Sarah", "Emily", "Mia", "Mia", "Fiona", "Lia", "Johanna"]
+    },
+    "AT": {
+        "male": ["Paul", "Luca", "Jakob", "Max", "Jakob", "Felix", "Lukas", "Leon", "David", "Niklas", "Simon", "Matthias", "Adrian", "Johannes", "Alexander", "Stefan", "Benjamin", "Thomas", "Matteo", "Florian"],
+        "female": ["Anna", "Emma", "Mia", "Lea", "Sophie", "Lina", "Clara", "Julia", "Sarah", "Marlene", "Elena", "Laura", "Nina", "Lena", "Amelie", "Eva", "Johanna", "Fiona", "Melina", "Pauline"]
+    },
+    "CZ": {
+        "male": ["Jakub", "Tomáš", "Jan", "Martin", "Petr", "Jiří", "Michal", "Ondřej", "Martin", "Lukáš", "David", "Václav", "Marek", "Karel", "Roman", "Aleš", "Miroslav", "Jindřich", "Daniel", "Pavel"],
+        "female": ["Anna", "Eliška", "Sofie", "Lucie", "Adéla", "Tereza", "Veronika", "Karolína", "Jana", "Kateřina", "Martina", "Petra", "Michaela", "Ivana", "Barbora", "Hana", "Simona", "Zuzana", "Denisa", "Dagmar"]
+    },
+    "SK": {
+        "male": ["Jakub", "Martin", "Lukáš", "Tomáš", "Michal", "Peter", "Marek", "Róbert", "Jozef", "Pavol", "Ján", "Andrej", "Igor", "Milan", "Miroslav", "Daniel", "František", "Tibor", "Štefan", "Dušan"],
+        "female": ["Emma", "Sofia", "Mária", "Nina", "Katarína", "Jana", "Lucia", "Veronika", "Barbora", "Andrea", "Zuzana", "Simona", "Petra", "Eva", "Tatiana", "Monika", "Ivana", "Michaela", "Dagmar", "Renáta"]
+    },
+    "HR": {
+        "male": ["Luka", "Marko", "Ivan", "Petar", "Ante", "Josip", "Tomislav", "Nikola", "Mislav", "Vedran", "Damir", "Goran", "Zvonimir", "Dalibor", "Igor", "Vlado", "Željko", "Matija", "Filip", "Davor"],
+        "female": ["Ana", "Marija", "Ivana", "Katarina", "Maja", "Jelena", "Lidija", "Tina", "Ena", "Sanja", "Marta", "Andrea", "Renata", "Patricia", "Nina", "Diana", "Iva", "Vesna", "Jadranka", "Mirela"]
+    },
+    "SI": {
+        "male": ["Luka", "Jan", "Matej", "Tomaž", "Luka", "Marko", "David", "Miha", "Andrej", "Gregor", "Aleksander", "Matic", "Boris", "Damjan", "Igor", "Roman", "Vojko", "Jure", "Tine", "Rok"],
+        "female": ["Ana", "Maja", "Nina", "Sara", "Petra", "Katarina", "Tina", "Urša", "Janja", "Sonja", "Eva", "Iva", "Nina", "Tanja", "Marija", "Ksenija", "Zuzana", "Klara", "Lucija", "Barbara"]
+    },
+    "AL": {
+        "male": ["Luan", "Arben", "Klodian", "Ilir", "Blerim", "Endri", "Alban", "Shkëlzen", "Ardit", "Erion", "Valon", "Florin", "Lirim", "Kreshnik", "Admir", "Besmir", "Sabri", "Xhevdet", "Mirel", "Naim"],
+        "female": ["Elda", "Flora", "Mira", "Arbana", "Enisa", "Lira", "Rina", "Vesna", "Xheni", "Albina", "Sonia", "Kleopatra", "Erisa", "Dafina", "Rina", "Alketa", "Arta", "Jona", "Teuta", "Mirela"]
+    },
+    "MD": {
+        "male": ["Ion", "Vladimir", "Andrei", "Mihai", "Doru", "Nicolae", "Victor", "Vasile", "Petru", "Marius", "Tudor", "Costel", "Emil", "Sorin", "Gabriel", "Florin", "Ilie", "Iulian", "Cornel", "Silvian"],
+        "female": ["Ana", "Maria", "Elena", "Irina", "Valentina", "Gabriela", "Natalia", "Mădălina", "Otilia", "Sonia", "Larisa", "Adriana", "Cristina", "Angela", "Monica", "Luiza", "Camelia", "Rodica", "Roxana", "Denisa"]
+    },
+    "ME": {
+        "male": ["Stefan", "Nikola", "Marko", "Milos", "Vuk", "Zoran", "Goran", "Jovan", "Vladimir", "Dusan", "Petar", "Radoslav", "Branislav", "Aleksandar", "Igor", "Milutin", "Slobodan", "Lazar", "Sasa", "Darko"],
+        "female": ["Ana", "Marija", "Ivana", "Milica", "Jovana", "Vesna", "Katarina", "Maja", "Biljana", "Dragana", "Snežana", "Sanja", "Jelena", "Tatjana", "Nataša", "Valentina", "Olga", "Danijela", "Renata", "Mira"]
+    },
+    "RS": {
+        "male": ["Nikola", "Stefan", "Marko", "Aleksandar", "Milan", "Nemanja", "Miroslav", "Jovan", "Vladimir", "Darko", "Vuk", "Goran", "Ivan", "Bojan", "Zoran", "Sava", "Dusan", "Radovan", "Nenad", "Djordje"],
+        "female": ["Ana", "Marija", "Ivana", "Milica", "Jovana", "Vesna", "Katarina", "Maja", "Biljana", "Dragana", "Snežana", "Sanja", "Jelena", "Tatjana", "Nataša", "Valentina", "Olga", "Danijela", "Renata", "Mira"]
+    },
+    "MK": {
+        "male": ["Aleksandar", "Marko", "Nikola", "Stefan", "Petar", "Mihajlo", "Vladimir", "Goran", "Igor", "Kiril", "Sasho", "Blagoja", "Borce", "Vasil", "Pero", "Nedeljko", "Dimitar", "Risto", "Ljupčo", "Bojan"],
+        "female": ["Ana", "Marija", "Jelena", "Ivana", "Katerina", "Elena", "Violeta", "Maja", "Nina", "Svetlana", "Tatjana", "Dragana", "Biljana", "Milena", "Slavica", "Sonja", "Danijela", "Jovana", "Ksenija", "Tanja"]
+    }
+};
+
+
+        let selectedGender = 'male';
+        let selectedRegion = '';
+
+        function drawRegionsMap() {
+            const options = {
+                region: '150',  // Europe
+                backgroundColor: '#121212',
+                datalessRegionColor: '#333333',
+                defaultColor: '#444444',
+                colorAxis: { colors: ['#444444', '#666666'] },
+                displayMode: 'regions',
+                resolution: 'countries'
+            };
+
+            const data = google.visualization.arrayToDataTable([
+                ['Country', 'Names'],
+                [{v: 'FR', f: 'France'}, names['FR']['male'].length + names['FR']['female'].length],
+                [{v: 'DE', f: 'Deutschland'}, names['DE']['male'].length + names['DE']['female'].length],
+                [{v: 'IT', f: 'Italia'}, names['IT']['male'].length + names['IT']['female'].length],
+                [{v: 'RU', f: 'Rossiya'}, names['RU']['male'].length + names['RU']['female'].length],
+                [{v: 'PL', f: 'Polska'}, names['PL']['male'].length + names['PL']['female'].length],
+                [{v: 'UA', f: 'Ukrayina'}, names['UA']['male'].length + names['UA']['female'].length],
+                [{v: 'RO', f: 'România'}, names['RO']['male'].length + names['RO']['female'].length],
+                [{v: 'HU', f: 'Magyarország'}, names['HU']['male'].length + names['HU']['female'].length],
+                [{v: 'BG', f: 'Balgariya'}, names['BG']['male'].length + names['BG']['female'].length],
+                [{v: 'ES', f: 'España'}, names['ES']['male'].length + names['ES']['female'].length],
+                [{v: 'PT', f: 'Portugal'}, names['PT']['male'].length + names['PT']['female'].length],
+                [{v: 'NL', f: 'Nederland'}, names['NL']['male'].length + names['NL']['female'].length],
+                [{v: 'BE', f: 'België'}, names['BE']['male'].length + names['BE']['female'].length],
+                [{v: 'CH', f: 'Schweiz'}, names['CH']['male'].length + names['CH']['female'].length],
+                [{v: 'AT', f: 'Österreich'}, names['AT']['male'].length + names['AT']['female'].length],
+                [{v: 'CZ', f: 'Česko'}, names['CZ']['male'].length + names['CZ']['female'].length],
+                [{v: 'SK', f: 'Slovensko'}, names['SK']['male'].length + names['SK']['female'].length],
+                [{v: 'HR', f: 'Hrvatska'}, names['HR']['male'].length + names['HR']['female'].length],
+                [{v: 'SI', f: 'Slovenija'}, names['SI']['male'].length + names['SI']['female'].length],
+                [{v: 'ME', f: 'Crna Gora'}, names['ME']['male'].length + names['ME']['female'].length],
+                [{v: 'RS', f: 'Srbija'}, names['RS']['male'].length + names['RS']['female'].length],
+                [{v: 'MK', f: 'Makedonija'}, names['MK']['male'].length + names['MK']['female'].length],
+                [{v: 'MD', f: 'Moldova'}, names['MD']['male'].length + names['MD']['female'].length],
+                [{v: 'AL', f: 'Shqipëri'}, names['AL']['male'].length + names['AL']['female'].length]
+                // Add more countries as needed
+            ]);
+
+            const chart = new google.visualization.GeoChart(document.getElementById('map'));
+
+            google.visualization.events.addListener(chart, 'regionClick', function(event) {
+                selectedRegion = event.region;
+                displayNames(selectedRegion);
+            });
+
+            chart.draw(data, options);
+        }
+
+        function displayNames(region) {
+            const nameFilter = document.getElementById('nameFilter').value.toLowerCase();
+            const regionNames = names[region] ? names[region][selectedGender] : [];
+            const filteredNames = regionNames.filter(name => name.toLowerCase().startsWith(nameFilter));
+            const namesDiv = document.getElementById('names');
+            namesDiv.innerHTML = filteredNames.join(', ') || 'No names available for this region.';
+        }
+
+        document.addEventListener('DOMContentLoaded', function() {
+            document.getElementById('male').addEventListener('click', function() {
+                selectedGender = 'male';
+                updateGenderSelection();
+            });
+
+            document.getElementById('female').addEventListener('click', function() {
+                selectedGender = 'female';
+                updateGenderSelection();
+            });
+
+            document.getElementById('nameFilter').addEventListener('input', function() {
+                displayNames(selectedRegion);
+            });
+        });
+
+        function updateGenderSelection() {
+            document.getElementById('male').style.backgroundColor = selectedGender === 'male' ? '#555' : '#333';
+            document.getElementById('female').style.backgroundColor = selectedGender === 'female' ? '#555' : '#333';
+            displayNames(selectedRegion);
+        }
+    </script>
+</head>
+<body>
+    <div class="top-bar">
+        <div class="navbar">
+            <img id="male" src="https://upload.wikimedia.org/wikipedia/commons/thumb/b/b7/Mars_symbol.svg/800px-Mars_symbol.svg.png" alt="Male">
+            <img id="female" src="https://upload.wikimedia.org/wikipedia/commons/thumb/6/66/Venus_symbol.svg/640px-Venus_symbol.svg.png" alt="Female">
+        </div>
+        <div id="map"></div>
+    </div>
+    <div id="filters">
+        <input type="text" id="nameFilter" placeholder="Filter names by starting letter">
+    </div>
+    <div id="names"></div>
+</body>
+</html>
