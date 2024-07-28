@@ -1,0 +1,495 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Advanced Music Player</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            background-color: #000;
+            color: #fff;
+            font-family: Arial, sans-serif;
+            display: flex;
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        .visualizer {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: #222;
+            overflow: hidden;
+            z-index: -1;
+        }
+
+        .visualizer canvas {
+            width: 100%;
+            height: 100%;
+            display: block;
+        }
+
+        .left-container, .right-container {
+            width: 50%;
+            height: 100%;
+            padding: 20px;
+            box-sizing: border-box;
+        }
+
+        .left-container {
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-start;
+        }
+
+        .drop-area {
+            width: 100%;
+            height: 150px;
+            border: 2px dashed #fff;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: rgba(255, 255, 255, 0.1);
+            color: #fff;
+            font-size: 16px;
+            text-align: center;
+            cursor: pointer;
+            transition: background 0.3s;
+            margin-bottom: 20px;
+        }
+
+        .drop-area:hover {
+            background: rgba(255, 255, 255, 0.2);
+        }
+
+        .playlist {
+            flex-grow: 1;
+            border: 1px solid #444;
+            border-radius: 5px;
+            padding: 10px;
+            background-color: #333;
+            overflow-y: auto;
+        }
+
+        .playlist ul {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .playlist li {
+            padding: 5px;
+            cursor: pointer;
+        }
+
+        .playlist li:hover {
+            background-color: #444;
+        }
+
+        .right-container {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .current-song {
+            display: flex;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .current-song i {
+            font-size: 24px;
+            margin-right: 10px;
+        }
+
+        .current-song span {
+            font-size: 18px;
+        }
+
+        .controls {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            width: 100%;
+            max-width: 400px;
+        }
+
+        .controls button {
+            background-color: transparent;
+            border: none;
+            cursor: pointer;
+            margin: 5px;
+        }
+
+        .controls button i {
+            color: #fff;
+            font-size: 24px;
+            transition: color 0.3s;
+        }
+
+        .controls button:hover i {
+            color: #ddd;
+        }
+
+        .volume-control {
+            display: flex;
+            align-items: center;
+            margin: 10px 0;
+        }
+
+        .volume-control button i {
+            font-size: 24px;
+            margin-right: 10px;
+        }
+
+        .progress-container {
+            width: 100%;
+            margin: 10px 0;
+            display: flex;
+            align-items: center;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 10px;
+            background: #444;
+            border-radius: 5px;
+            position: relative;
+            cursor: pointer;
+            margin: 0 10px;
+        }
+
+        .progress-bar .progress {
+            height: 100%;
+            background: #4CAF50;
+            border-radius: 5px;
+            width: 0;
+            position: absolute;
+            top: 0;
+            left: 0;
+        }
+
+        .timestamp {
+            font-size: 14px;
+            margin: 0 10px;
+        }
+
+        audio {
+            display: none;
+        }
+
+        .overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            color: #fff;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.5s, visibility 0.5s;
+            z-index: 10;
+        }
+
+        .overlay.active {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .overlay .current-song {
+            font-size: 24px;
+            margin-bottom: 10px;
+        }
+
+        .overlay .timestamp {
+            font-size: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="visualizer" id="visualizer">
+        <canvas id="visualizerCanvas"></canvas>
+    </div>
+    <div class="left-container">
+        <div class="drop-area" id="dropArea">
+            <p>Drag & Drop Music Files Here</p>
+        </div>
+        <div class="playlist" id="playlist">
+            <ul></ul>
+        </div>
+    </div>
+    <div class="right-container">
+        <audio id="audioPlayer" controls></audio>
+        <div class="current-song" id="currentSong">
+            <i class="fas fa-music"></i>
+            <span>No song playing</span>
+        </div>
+        <div class="controls">
+            <div class="playback-controls">
+                <button id="prevBtn">
+                    <i class="fas fa-step-backward"></i>
+                </button>
+                <button id="playPauseBtn">
+                    <i class="fas fa-play" id="playIcon"></i>
+                    <i class="fas fa-pause" id="pauseIcon" style="display: none;"></i>
+                </button>
+                <button id="nextBtn">
+                    <i class="fas fa-step-forward"></i>
+                </button>
+                <button id="shuffleLoopBtn">
+                    <i class="fas fa-random" id="shuffleIcon" style="display: none;"></i>
+                    <i class="fas fa-retweet" id="loopIcon" style="display: none;"></i>
+                    <i class="fas fa-exchange-alt" id="noShuffleIcon"></i>
+                </button>
+            </div>
+            <div class="volume-control">
+                <button id="volDownBtn">
+                    <i class="fas fa-volume-down"></i>
+                </button>
+                <input type="range" id="volume" min="0" max="1" step="0.01" value="1">
+                <button id="volUpBtn">
+                    <i class="fas fa-volume-up"></i>
+                </button>
+            </div>
+            <div class="progress-container">
+                <span class="timestamp" id="currentTime">00:00</span>
+                <div class="progress-bar" id="progressBar">
+                    <div class="progress"></div>
+                </div>
+                <span class="timestamp" id="duration">00:00</span>
+            </div>
+        </div>
+    </div>
+    <div class="overlay" id="overlay">
+        <div class="current-song" id="overlaySongTitle">No song playing</div>
+        <div class="timestamp" id="overlayTime">00:00</div>
+    </div>
+    <script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const audioPlayer = document.getElementById('audioPlayer');
+        const playPauseBtn = document.getElementById('playPauseBtn');
+        const prevBtn = document.getElementById('prevBtn');
+        const nextBtn = document.getElementById('nextBtn');
+        const shuffleLoopBtn = document.getElementById('shuffleLoopBtn');
+        const shuffleIcon = document.getElementById('shuffleIcon');
+        const loopIcon = document.getElementById('loopIcon');
+        const noShuffleIcon = document.getElementById('noShuffleIcon');
+        const volDownBtn = document.getElementById('volDownBtn');
+        const volumeControl = document.getElementById('volume');
+        const volUpBtn = document.getElementById('volUpBtn');
+        const progressBar = document.getElementById('progressBar');
+        const progress = progressBar.querySelector('.progress');
+        const currentTimeElem = document.getElementById('currentTime');
+        const durationElem = document.getElementById('duration');
+        const playlist = document.getElementById('playlist').querySelector('ul');
+        const dropArea = document.getElementById('dropArea');
+        const currentSong = document.getElementById('currentSong').querySelector('span');
+        const overlay = document.getElementById('overlay');
+        const overlaySongTitle = document.getElementById('overlaySongTitle');
+        const overlayTime = document.getElementById('overlayTime');
+
+        let isPlaying = false;
+        let currentTrackIndex = 0;
+        let playbackMode = 'noShuffle'; // noShuffle, shuffle, loop
+        let audioFiles = [];
+
+        // Play/Pause button functionality
+        playPauseBtn.addEventListener('click', () => {
+            if (audioPlayer.paused) {
+                audioPlayer.play();
+                playPauseBtn.querySelector('#playIcon').style.display = 'none';
+                playPauseBtn.querySelector('#pauseIcon').style.display = 'inline';
+                isPlaying = true;
+            } else {
+                audioPlayer.pause();
+                playPauseBtn.querySelector('#playIcon').style.display = 'inline';
+                playPauseBtn.querySelector('#pauseIcon').style.display = 'none';
+                isPlaying = false;
+            }
+        });
+
+        // Previous button functionality
+        prevBtn.addEventListener('click', () => {
+            if (audioFiles.length > 0) {
+                currentTrackIndex = (currentTrackIndex - 1 + audioFiles.length) % audioFiles.length;
+                playTrack(currentTrackIndex);
+            }
+        });
+
+        // Next button functionality
+        nextBtn.addEventListener('click', () => {
+            if (audioFiles.length > 0) {
+                if (playbackMode === 'shuffle') {
+                    currentTrackIndex = Math.floor(Math.random() * audioFiles.length);
+                } else {
+                    currentTrackIndex = (currentTrackIndex + 1) % audioFiles.length;
+                }
+                playTrack(currentTrackIndex);
+            }
+        });
+
+        // Shuffle/NoShuffle/Loop button functionality
+        shuffleLoopBtn.addEventListener('click', () => {
+            if (playbackMode === 'noShuffle') {
+                playbackMode = 'shuffle';
+                shuffleIcon.style.display = 'inline';
+                noShuffleIcon.style.display = 'none';
+                loopIcon.style.display = 'none';
+            } else if (playbackMode === 'shuffle') {
+                playbackMode = 'loop';
+                shuffleIcon.style.display = 'none';
+                noShuffleIcon.style.display = 'none';
+                loopIcon.style.display = 'inline';
+            } else {
+                playbackMode = 'noShuffle';
+                shuffleIcon.style.display = 'none';
+                noShuffleIcon.style.display = 'inline';
+                loopIcon.style.display = 'none';
+            }
+        });
+
+        // Volume control buttons functionality
+        volDownBtn.addEventListener('click', () => {
+            audioPlayer.volume = Math.max(audioPlayer.volume - 0.1, 0);
+            volumeControl.value = audioPlayer.volume;
+        });
+
+        volUpBtn.addEventListener('click', () => {
+            audioPlayer.volume = Math.min(audioPlayer.volume + 0.1, 1);
+            volumeControl.value = audioPlayer.volume;
+        });
+
+        // Volume control range input functionality
+        volumeControl.addEventListener('input', () => {
+            audioPlayer.volume = volumeControl.value;
+        });
+
+        // Update progress bar
+        audioPlayer.addEventListener('timeupdate', () => {
+            const { currentTime, duration } = audioPlayer;
+            if (duration > 0) {
+                const progressPercentage = (currentTime / duration) * 100;
+                progress.style.width = `${progressPercentage}%`;
+                currentTimeElem.textContent = formatTime(currentTime);
+                durationElem.textContent = formatTime(duration);
+                overlayTime.textContent = formatTime(currentTime);
+            }
+        });
+
+        // Handle progress bar click
+        progressBar.addEventListener('click', (event) => {
+            if (audioPlayer.duration) {
+                const { offsetX } = event;
+                const totalWidth = progressBar.offsetWidth;
+                const newTime = (offsetX / totalWidth) * audioPlayer.duration;
+                audioPlayer.currentTime = newTime;
+            }
+        });
+
+        // Format time in MM:SS
+        function formatTime(seconds) {
+            const minutes = Math.floor(seconds / 60);
+            const secs = Math.floor(seconds % 60);
+            return `${minutes.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+        }
+
+        // Playlist functionality
+        function addToPlaylist(file) {
+            if (!audioFiles.some(f => f.name === file.name)) {
+                const listItem = document.createElement('li');
+                listItem.textContent = file.name;
+                listItem.addEventListener('click', () => {
+                    currentTrackIndex = audioFiles.findIndex(f => f.name === file.name);
+                    playTrack(currentTrackIndex);
+                });
+                playlist.appendChild(listItem);
+                audioFiles.push(file);
+            }
+        }
+
+        function playTrack(index) {
+            if (index >= 0 && index < audioFiles.length) {
+                const file = audioFiles[index];
+                const url = URL.createObjectURL(file);
+                audioPlayer.src = url;
+                audioPlayer.play();
+                playPauseBtn.querySelector('#playIcon').style.display = 'none';
+                playPauseBtn.querySelector('#pauseIcon').style.display = 'inline';
+                isPlaying = true;
+                currentSong.textContent = file.name;
+                overlaySongTitle.textContent = file.name;
+                showOverlay();
+            }
+        }
+
+        // Handle file uploads
+        function handleFiles(files) {
+            for (const file of files) {
+                if (file.type.startsWith('audio/')) {
+                    addToPlaylist(file);
+                }
+            }
+            if (audioFiles.length > 0) {
+                playTrack(0);
+            }
+        }
+
+        // Drag and drop
+        dropArea.addEventListener('dragover', (event) => {
+            event.preventDefault();
+            dropArea.classList.add('hover');
+        });
+
+        dropArea.addEventListener('dragleave', () => {
+            dropArea.classList.remove('hover');
+        });
+
+        dropArea.addEventListener('drop', (event) => {
+            event.preventDefault();
+            dropArea.classList.remove('hover');
+            const files = event.dataTransfer.files;
+            handleFiles(files);
+        });
+
+        // Handle end of track
+        audioPlayer.addEventListener('ended', () => {
+            if (audioFiles.length > 0) {
+                if (playbackMode === 'loop') {
+                    playTrack(currentTrackIndex);
+                } else if (playbackMode === 'shuffle') {
+                    currentTrackIndex = Math.floor(Math.random() * audioFiles.length);
+                    playTrack(currentTrackIndex);
+                } else {
+                    currentTrackIndex = (currentTrackIndex + 1) % audioFiles.length;
+                    playTrack(currentTrackIndex);
+                }
+            }
+        });
+
+        // Overlay functionality
+        function showOverlay() {
+            overlay.classList.add('active');
+            setTimeout(hideOverlay, 3000);
+        }
+
+        function hideOverlay() {
+            overlay.classList.remove('active');
+        }
+    });
+</script>
+
+</body>
+</html>
